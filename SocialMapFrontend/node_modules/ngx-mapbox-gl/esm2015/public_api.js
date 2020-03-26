@@ -1,0 +1,20 @@
+/**
+ * @fileoverview added by tsickle
+ * Generated from: public_api.ts
+ * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ */
+/*
+ * Public API Surface of ngx-mapbox-gl
+ */
+export { NgxMapboxGLModule } from './lib/ngx-mapbox-gl.module';
+// Expose control component to allow custom directives
+export { CustomControl, ControlComponent } from './lib/control/control.component';
+// Expose MapService for ngx-mapbox-gl extensions
+export { MAPBOX_API_KEY, MglResizeEventEmitter, MapService } from './lib/map/map.service';
+export { MapComponent } from './lib/map/map.component';
+// Expose GeoJSONSourceComponent to access cluster functions
+export { GeoJSONSourceComponent } from './lib/source/geojson/geojson-source.component';
+export {} from './lib/map/map.types';
+// Expose GeocoderControlDirective provided injection tokens
+export { MAPBOX_GEOCODER_API_KEY } from './lib/control/geocoder-control.directive';
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoicHVibGljX2FwaS5qcyIsInNvdXJjZVJvb3QiOiJuZzovL25neC1tYXBib3gtZ2wvIiwic291cmNlcyI6WyJwdWJsaWNfYXBpLnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7Ozs7Ozs7O0FBSUEsa0NBQWMsNEJBQTRCLENBQUM7O0FBRzNDLGdEQUFjLGlDQUFpQyxDQUFDOztBQUdoRCxrRUFBYyx1QkFBdUIsQ0FBQztBQUN0Qyw2QkFBYyx5QkFBeUIsQ0FBQzs7QUFHeEMsdUNBQWMsK0NBQStDLENBQUM7QUFFOUQsZUFBYyxxQkFBcUIsQ0FBQzs7QUFHcEMsT0FBTyxFQUFFLHVCQUF1QixFQUFFLE1BQU0sMENBQTBDLENBQUMiLCJzb3VyY2VzQ29udGVudCI6WyIvKlxuICogUHVibGljIEFQSSBTdXJmYWNlIG9mIG5neC1tYXBib3gtZ2xcbiAqL1xuXG5leHBvcnQgKiBmcm9tICcuL2xpYi9uZ3gtbWFwYm94LWdsLm1vZHVsZSc7XG5cbi8vIEV4cG9zZSBjb250cm9sIGNvbXBvbmVudCB0byBhbGxvdyBjdXN0b20gZGlyZWN0aXZlc1xuZXhwb3J0ICogZnJvbSAnLi9saWIvY29udHJvbC9jb250cm9sLmNvbXBvbmVudCc7XG5cbi8vIEV4cG9zZSBNYXBTZXJ2aWNlIGZvciBuZ3gtbWFwYm94LWdsIGV4dGVuc2lvbnNcbmV4cG9ydCAqIGZyb20gJy4vbGliL21hcC9tYXAuc2VydmljZSc7XG5leHBvcnQgKiBmcm9tICcuL2xpYi9tYXAvbWFwLmNvbXBvbmVudCc7XG5cbi8vIEV4cG9zZSBHZW9KU09OU291cmNlQ29tcG9uZW50IHRvIGFjY2VzcyBjbHVzdGVyIGZ1bmN0aW9uc1xuZXhwb3J0ICogZnJvbSAnLi9saWIvc291cmNlL2dlb2pzb24vZ2VvanNvbi1zb3VyY2UuY29tcG9uZW50JztcblxuZXhwb3J0ICogZnJvbSAnLi9saWIvbWFwL21hcC50eXBlcyc7XG5cbi8vIEV4cG9zZSBHZW9jb2RlckNvbnRyb2xEaXJlY3RpdmUgcHJvdmlkZWQgaW5qZWN0aW9uIHRva2Vuc1xuZXhwb3J0IHsgTUFQQk9YX0dFT0NPREVSX0FQSV9LRVkgfSBmcm9tICcuL2xpYi9jb250cm9sL2dlb2NvZGVyLWNvbnRyb2wuZGlyZWN0aXZlJztcbiJdfQ==
