@@ -1,0 +1,53 @@
+
+
+<mat-card>
+    <mat-card-content>
+        <ng-template [ngIf]="geocoderFlag">
+            <form [formGroup]="markerForm">
+                <mat-form-field>
+                    <input type="text" matInput placeholder="Collection" formControlName="collection" [matAutocomplete]="auto">           
+                    <mat-autocomplete #auto="matAutocomplete">
+                    <mat-option *ngFor="let collection of markerCollectionNames" [value]="collection">
+                        {{collection}}
+                    </mat-option>
+                    </mat-autocomplete>
+                </mat-form-field>
+                <mat-form-field>
+                    <input matInput placeholder="address" formControlName="address">
+                </mat-form-field>
+                <mat-form-field>
+                    <input matInput placeholder="Description" formControlName="description">
+                </mat-form-field>
+                <!-- <mat-form-field>
+                    <input matInput placeholder="Longitude" formControlName="longitude">
+                </mat-form-field>
+                <mat-form-field>
+                    <input matInput placeholder="Lattitude" formControlName="lattitude">
+                </mat-form-field> -->
+                <mat-card-actions>
+                    <button [disabled]="!markerForm.valid" (click)="addMarker()" mat-button color="primary">Save to Collection</button>
+                </mat-card-actions>
+                    <button (click)="this.data.changeGeocoderFlag(false)" mat-button color="warn">Cancel</button>
+            </form>
+        </ng-template>
+        <ng-template [ngIf]="!geocoderFlag">
+            <p style="text-align: center;">Search a Location to Add to a Collection.</p>
+        </ng-template>
+    </mat-card-content>
+</mat-card>
+<br>
+<mat-card>
+    <mat-card-content> 
+        <ng-template [ngIf]="markerCollectionNames.length === 0">
+            <p style="text-align: center;">No Collections to Show.</p>
+        </ng-template>
+        <ng-template [ngIf]="markerCollectionNames.length != 0">
+            <mat-selection-list #collectionList [(ngModel)]="selectedCollections" (ngModelChange)="changeSelectedCollections()">
+                <mat-list-option *ngFor="let name of markerCollectionNames" [value]="name">
+                  {{name}}
+                </mat-list-option>
+              </mat-selection-list>
+        </ng-template>
+    </mat-card-content>
+</mat-card>
+
