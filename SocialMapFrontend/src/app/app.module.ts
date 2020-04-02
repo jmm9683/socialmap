@@ -18,7 +18,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { OmniwindowComponent } from './omniwindow/omniwindow.component';
 import { DataService } from './data.service';
 import { MarkercollectionComponent } from './markercollection/markercollection.component';
-
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -42,7 +42,8 @@ import { MarkercollectionComponent } from './markercollection/markercollection.c
     MatCheckboxModule,
     MatChipsModule,
     MatCardModule,
-    MatAutocompleteModule
+    MatAutocompleteModule,
+    HttpClientModule
     
   ],
   providers: [DataService],

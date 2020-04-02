@@ -12,7 +12,6 @@ export class MarkercollectionComponent implements OnInit {
   geocoderObject: object;
   geocoderFlag: boolean;
   markerCollection: object;
-  markerCollectionNames: Array<String>;
   markerForm: FormGroup;
   selectedCollections: Array<String>;
  
@@ -29,10 +28,10 @@ export class MarkercollectionComponent implements OnInit {
       })
     });
     this.data.currentGeocoderFlag.subscribe(geocoderFlag => this.geocoderFlag = geocoderFlag);
-
     this.data.currentMarkerCollection.subscribe(markerCollection => this.markerCollection = markerCollection);
-    this.data.currentMarkerCollectionNames.subscribe(markerCollectionNames => this.markerCollectionNames = markerCollectionNames);
     this.data.currentSelectedCollections.subscribe(selectedCollections => this.selectedCollections = selectedCollections);
+
+    this.data.getCollections("BurgerMilkshake");
 
   }
 
@@ -41,7 +40,7 @@ export class MarkercollectionComponent implements OnInit {
       console.log('form is not valid');
       return;
     }
-    //if a new collection
+    
     let collection = this.markerForm.controls['collection'].value;
     let longitude = this.markerForm.controls['longitude'].value;
     let lattitude = this.markerForm.controls['lattitude'].value;
@@ -54,17 +53,18 @@ export class MarkercollectionComponent implements OnInit {
           }
       }]
     };
-    if (!this.markerCollectionNames.includes(collection)){
-      this.markerCollectionNames.push(collection);
+
+    //if a new collection
+    if (!this.markerCollection["collectionNames"].includes(collection)){
+      this.markerCollection["collectionNames"].push(collection);
       this.markerCollection['markerCollection'].push(newCollection);
-      this.data.changeMarkerCollectionNames(this.markerCollectionNames);
-      this.data.changeMarkerCollection(this.markerCollection);
+      this.data.postCollections(this.markerCollection);
     }
     else{
       //!!
-      let collectionIndex = this.markerCollectionNames.indexOf(collection);
+      let collectionIndex = this.markerCollection["collectionNames"].indexOf(collection);
       this.markerCollection['markerCollection'][collectionIndex][collection].push(newCollection[collection][0]);
-      this.data.changeMarkerCollection(this.markerCollection);
+      this.data.postCollections(this.markerCollection);
     }
     this.data.changeGeocoderFlag(false);
   }

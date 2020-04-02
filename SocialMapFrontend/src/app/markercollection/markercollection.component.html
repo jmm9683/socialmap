@@ -7,14 +7,16 @@
                 <mat-form-field>
                     <input type="text" matInput placeholder="Collection" formControlName="collection" [matAutocomplete]="auto">           
                     <mat-autocomplete #auto="matAutocomplete">
-                    <mat-option *ngFor="let collection of markerCollectionNames" [value]="collection">
+                    <mat-option *ngFor="let collection of markerCollection['collectionNames']" [value]="collection">
                         {{collection}}
                     </mat-option>
                     </mat-autocomplete>
                 </mat-form-field>
+                <br>
                 <mat-form-field>
                     <input matInput placeholder="address" formControlName="address">
                 </mat-form-field>
+                <br>
                 <mat-form-field>
                     <input matInput placeholder="Description" formControlName="description">
                 </mat-form-field>
@@ -38,12 +40,12 @@
 <br>
 <mat-card>
     <mat-card-content> 
-        <ng-template [ngIf]="markerCollectionNames.length === 0">
+        <ng-template [ngIf]="markerCollection['collectionNames'].length === 0">
             <p style="text-align: center;">No Collections to Show.</p>
         </ng-template>
-        <ng-template [ngIf]="markerCollectionNames.length != 0">
+        <ng-template [ngIf]="markerCollection['collectionNames'].length != 0">
             <mat-selection-list #collectionList [(ngModel)]="selectedCollections" (ngModelChange)="changeSelectedCollections()">
-                <mat-list-option *ngFor="let name of markerCollectionNames" [value]="name">
+                <mat-list-option *ngFor="let name of markerCollection['collectionNames']" [value]="name">
                   {{name}}
                 </mat-list-option>
               </mat-selection-list>
