@@ -20,7 +20,6 @@ export class MapComponent implements OnInit, AfterViewInit {
   geocoder: MapboxGeocoder;
   geocoderObject: object;
   geocoderFlag: boolean;
-  markerCollection: object;
   selectedCollections: Array<String>;
   style = 'mapbox://styles/jjaakee/ck5l9uadc29pu1ipb6l3xp5r5';
   lat = 30.2672;
@@ -31,9 +30,7 @@ export class MapComponent implements OnInit, AfterViewInit {
 
   private user = "BurgerMilkshake"
 
-  constructor(private data: DataService, public db: AngularFireDatabase ) { 
-    this.markerCollection = db.list('users/' + this.user + '/markerCollection').valueChanges();
-  }
+  constructor(private data: DataService, public db: AngularFireDatabase ) {}
   
   ngOnInit() {
     this.data.currentGeocoderObject.subscribe(geocoderObject => this.geocoderObject = geocoderObject);
@@ -80,53 +77,54 @@ export class MapComponent implements OnInit, AfterViewInit {
 
   DisplayMarkersOnMap(){
 
-    for (let marker in this.markerCollection){
-      console.log(this.selectedCollections)
-    }
-    return;
-
-    for (let i = 0; i < this.currentMarkers.length; i++){
-      console.log(this.currentMarkers);
-      let id = 'marker' + i;
-      this.map.removeLayer(id);
-      this.map.removeSource(id);
-      
-    }
-    this.currentMarkers = [];
-    for (let i = 0; i < this.markerCollection['markerCollection'].length; i++){
-      let collectionName = Object.keys(this.markerCollection['markerCollection'][i])[0]
-      if (this.selectedCollections.includes(collectionName)){
-        for (let j = 0; j < this.markerCollection['markerCollection'][i][collectionName].length; j++)
-          this.currentMarkers.push(this.markerCollection['markerCollection'][i][collectionName][j]);
+    this.db.list('users/' + this.user + '/markerCollection').valueChanges().subscribe(snapshots => {
+      for (let i = 0; i < this.currentMarkers.length; i++){
         console.log(this.currentMarkers);
+        let id = 'marker' + i;
+        this.map.removeLayer(id);
+        this.map.removeSource(id);
+        
       }
-    }
+      this.currentMarkers = [];
 
-    for (let i = 0; i < this.currentMarkers.length; i++){
-      console.log(this.currentMarkers.length);
-      console.log(this.currentMarkers[i]);
-      let id = 'marker' + i
-      this.map.addLayer({
-        id: id,
-        type: 'symbol',
-        source: {
-          type: 'geojson',
-          data: {
-            type: 'Feature',
-            properties: {},
-            geometry: {
-              type: 'Point',
-              coordinates: [this.currentMarkers[i]['geometry']['coordinates'][0], this.currentMarkers[i]['geometry']['coordinates'][1]]
+      snapshots.forEach((snapshot: object) => {
+        let collectionName = snapshot["collectionName"];
+        if (this.selectedCollections.includes(collectionName)){
+          for (let i in snapshot){
+            if (i != "collectionName"){
+              this.currentMarkers.push(snapshot[i]);
             }
           }
-        },
-        layout: {
-          'icon-image': 'embassy-15',
-          'icon-padding': 0,
-          'icon-allow-overlap': true
-          }
+        }
       });
-    }
+
+      for (let i = 0; i < this.currentMarkers.length; i++){
+        console.log(this.currentMarkers.length);
+        console.log(this.currentMarkers[i]);
+        let id = 'marker' + i
+        this.map.addLayer({
+          id: id,
+          type: 'symbol',
+          source: {
+            type: 'geojson',
+            data: {
+              type: 'Feature',
+              properties: {},
+              geometry: {
+                type: 'Point',
+                coordinates: [this.currentMarkers[i]['geometry']['coordinates'][0], this.currentMarkers[i]['geometry']['coordinates'][1]]
+              }
+            }
+          },
+          layout: {
+            'icon-image': 'embassy-15',
+            'icon-padding': 0,
+            'icon-allow-overlap': true
+            }
+        });
+      }
+
+    })
   }
 }
 	  

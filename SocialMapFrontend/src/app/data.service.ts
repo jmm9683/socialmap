@@ -8,7 +8,6 @@ import { Observable } from 'rxjs';
 @Injectable()
 
 export class DataService {
-    BASE_URL = 'http://localhost:63145'
     private geocoderObject = new BehaviorSubject<object>(
         {"result": {
             "place_name": "temp",

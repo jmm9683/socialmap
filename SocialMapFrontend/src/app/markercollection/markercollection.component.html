@@ -7,7 +7,7 @@
                 <mat-form-field>
                     <input type="text" matInput placeholder="Collection" formControlName="collection" [matAutocomplete]="auto">           
                     <mat-autocomplete #auto="matAutocomplete">
-                    <mat-option *ngFor="let collection of markerCollection | async" [value]="collection">
+                    <mat-option *ngFor="let collection of markerCollection | async" [value]="collection.collectionName">
                         {{collection.collectionName}}
                     </mat-option>
                     </mat-autocomplete>
@@ -46,7 +46,7 @@
             </ng-template>
             <ng-template [ngIf]="(collections | json) != ([] | json)">
                 <mat-selection-list #collectionList [(ngModel)]="selectedCollections" (ngModelChange)="changeSelectedCollections()">
-                    <mat-list-option *ngFor="let name of collections">
+                    <mat-list-option *ngFor="let name of collections" [value]="name.collectionName">
                         {{name.collectionName}}
                     </mat-list-option>
                 </mat-selection-list>
