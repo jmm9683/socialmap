@@ -19,6 +19,9 @@ import { OmniwindowComponent } from './omniwindow/omniwindow.component';
 import { DataService } from './data.service';
 import { MarkercollectionComponent } from './markercollection/markercollection.component';
 import { HttpClientModule } from '@angular/common/http';
+import { AngularFireModule } from '@angular/fire';
+import { AngularFireDatabaseModule } from '@angular/fire/database';
+import { environment } from '../environments/environment';
 
 @NgModule({
   declarations: [
@@ -43,8 +46,9 @@ import { HttpClientModule } from '@angular/common/http';
     MatChipsModule,
     MatCardModule,
     MatAutocompleteModule,
-    HttpClientModule
-    
+    HttpClientModule,
+    AngularFireModule.initializeApp(environment.firebase),
+    AngularFireDatabaseModule
   ],
   providers: [DataService],
   bootstrap: [AppComponent]

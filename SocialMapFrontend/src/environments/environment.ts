@@ -6,6 +6,16 @@ export const environment = {
   production: false,
   mapbox: {
     accessToken: 'pk.eyJ1IjoiamphYWtlZSIsImEiOiJjazVrOGV5MXMwYmsxM21tdnh0MGdoeGowIn0.ZnEs41Ez6kvvxQSJAlJahA'
+  },
+  firebase: {
+    apiKey: "AIzaSyCs8LRoqwobnvKSa4Yzev5uyzFxW2hJ1y0",
+    authDomain: "socialmapp-a12dc.firebaseapp.com",
+    databaseURL: "https://socialmapp-a12dc.firebaseio.com",
+    projectId: "socialmapp-a12dc",
+    storageBucket: "socialmapp-a12dc.appspot.com",
+    messagingSenderId: "965271742613",
+    appId: "1:965271742613:web:89038e07a0fd01fac0139c",
+    measurementId: "G-ZZBXVWFKK3"
   }
 };
 

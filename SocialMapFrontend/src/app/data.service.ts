@@ -1,12 +1,15 @@
 import { Injectable, EventEmitter } from '@angular/core';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Subscription } from 'rxjs/internal/Subscription';
-import { HttpClient, HttpHeaders } from '@angular/common/http';   
+import { HttpClient, HttpHeaders } from '@angular/common/http';  
+import { AngularFireDatabase } from '@angular/fire/database'; 
+import { Observable } from 'rxjs';
 
 @Injectable()
 
 export class DataService {
     BASE_URL = 'http://localhost:63145'
+    private user = "BurgerMilkshake"
     private collectionStore;
     private geocoderObject = new BehaviorSubject<object>(
         {"result": {
@@ -16,18 +19,16 @@ export class DataService {
         }
     });
     private geocoderFlag = new BehaviorSubject<boolean>(false);
-    
     currentGeocoderFlag = this.geocoderFlag.asObservable();
     currentGeocoderObject = this.geocoderObject.asObservable();
 
     private markerCollection = new BehaviorSubject<object>(
-        {"markerCollection": [], "collectionNames": [], "user": "BurgerMilkshake"});
+        {"markerCollection": [], "collectionNames": []});
     private selectedCollections = new BehaviorSubject<Array<String>>([]);
-
     currentMarkerCollection = this.markerCollection.asObservable();
     currentSelectedCollections = this.selectedCollections.asObservable();
 
-    constructor(private http: HttpClient ) {}
+    constructor(private http: HttpClient, public db: AngularFireDatabase ) {}
 
     changeGeocoderFlag(flag: boolean){
         this.geocoderFlag.next(flag);
@@ -47,20 +48,14 @@ export class DataService {
       }
 
     postCollections(collection){
-        this.http.put(this.BASE_URL + '/collection/user', collection).subscribe(response => {
-          this.collectionStore = (response);
-          this.changeMarkerCollection(this.collectionStore);
-          this.DisplayMarkersOnMap()
-        }, error => {
-          this.handleError("Unable to post collection.")
-        });
-        
+        this.db.list("users").set(this.user, collection);
     }
 
     changeMarkerCollection(marker: object){
         this.markerCollection.next(marker);
         console.log(this.markerCollection);
     }
+    
     changeSelectedCollections(name: Array<String>){
         this.selectedCollections.next(name);
     }
