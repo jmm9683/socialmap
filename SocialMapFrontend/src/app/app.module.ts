@@ -15,6 +15,8 @@ import { MatCardModule } from '@angular/material/card';
 import { MatListModule } from '@angular/material/list';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { NgxAuthFirebaseUIModule } from 'ngx-auth-firebaseui';
+import { FlexLayoutModule } from '@angular/flex-layout';
 import { OmniwindowComponent } from './omniwindow/omniwindow.component';
 import { DataService } from './data.service';
 import { MarkercollectionComponent } from './markercollection/markercollection.component';
@@ -48,7 +50,9 @@ import { environment } from '../environments/environment';
     MatAutocompleteModule,
     HttpClientModule,
     AngularFireModule.initializeApp(environment.firebase),
-    AngularFireDatabaseModule
+    AngularFireDatabaseModule,
+    NgxAuthFirebaseUIModule.forRoot(environment.firebase),
+    FlexLayoutModule
   ],
   providers: [DataService],
   bootstrap: [AppComponent]
