@@ -9,8 +9,6 @@ import { Observable } from 'rxjs';
 
 export class DataService {
     BASE_URL = 'http://localhost:63145'
-    private user = "BurgerMilkshake"
-    private collectionStore;
     private geocoderObject = new BehaviorSubject<object>(
         {"result": {
             "place_name": "temp",
@@ -22,10 +20,7 @@ export class DataService {
     currentGeocoderFlag = this.geocoderFlag.asObservable();
     currentGeocoderObject = this.geocoderObject.asObservable();
 
-    private markerCollection = new BehaviorSubject<object>(
-        {"markerCollection": [], "collectionNames": []});
     private selectedCollections = new BehaviorSubject<Array<String>>([]);
-    currentMarkerCollection = this.markerCollection.asObservable();
     currentSelectedCollections = this.selectedCollections.asObservable();
 
     constructor(private http: HttpClient, public db: AngularFireDatabase ) {}
@@ -36,24 +31,6 @@ export class DataService {
 
     changeGeocoderObject(geocoder: object){
         this.geocoderObject.next(geocoder);
-    }
-
-    getCollections(user){
-          this.http.post(this.BASE_URL + '/collection/user', {"user": user}).subscribe(response =>{
-            this.collectionStore = response;
-            this.changeMarkerCollection(this.collectionStore);
-          }, error => {
-            this.handleError("Unable to get collections.");
-          });
-      }
-
-    postCollections(collection){
-        this.db.list("users").set(this.user, collection);
-    }
-
-    changeMarkerCollection(marker: object){
-        this.markerCollection.next(marker);
-        console.log(this.markerCollection);
     }
     
     changeSelectedCollections(name: Array<String>){

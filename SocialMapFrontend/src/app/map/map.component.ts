@@ -3,6 +3,8 @@ import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { DataService } from '../data.service';
 import * as mapboxgl from 'mapbox-gl';
 import * as MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
+import { AngularFireDatabase } from '@angular/fire/database'; 
+import { Observable } from 'rxjs';
 
 
 
@@ -27,12 +29,15 @@ export class MapComponent implements OnInit, AfterViewInit {
   // markers saved here
   currentMarkers =  [];
 
-  constructor(private data: DataService) { }
+  private user = "BurgerMilkshake"
+
+  constructor(private data: DataService, public db: AngularFireDatabase ) { 
+    this.markerCollection = db.list('users/' + this.user + '/markerCollection').valueChanges();
+  }
   
   ngOnInit() {
     this.data.currentGeocoderObject.subscribe(geocoderObject => this.geocoderObject = geocoderObject);
     this.data.currentGeocoderFlag.subscribe(geocoderFlag => this.geocoderFlag = geocoderFlag);
-    this.data.currentMarkerCollection.subscribe(markerCollection => this.markerCollection = markerCollection);
     this.data.currentSelectedCollections.subscribe(selectedCollections => this.selectedCollections = selectedCollections);
 
     Object.getOwnPropertyDescriptor(mapboxgl, "accessToken").set(environment.mapbox.accessToken);
@@ -54,8 +59,7 @@ export class MapComponent implements OnInit, AfterViewInit {
     this.map.addControl(new mapboxgl.GeolocateControl());
 
     if (this.data.displayMakerSub==undefined) {    
-      this.data.displayMakerSub = this.data.    
-      invokeDisplayMarkers.subscribe((name:string) => {    
+      this.data.displayMakerSub = this.data.invokeDisplayMarkers.subscribe((name:string) => {    
         this.DisplayMarkersOnMap();    
       });    
     }   
@@ -75,6 +79,12 @@ export class MapComponent implements OnInit, AfterViewInit {
 
 
   DisplayMarkersOnMap(){
+
+    for (let marker in this.markerCollection){
+      console.log(this.selectedCollections)
+    }
+    return;
+
     for (let i = 0; i < this.currentMarkers.length; i++){
       console.log(this.currentMarkers);
       let id = 'marker' + i;

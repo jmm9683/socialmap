@@ -7,8 +7,8 @@
                 <mat-form-field>
                     <input type="text" matInput placeholder="Collection" formControlName="collection" [matAutocomplete]="auto">           
                     <mat-autocomplete #auto="matAutocomplete">
-                    <mat-option *ngFor="let collection of markerCollection['collectionNames']" [value]="collection">
-                        {{collection}}
+                    <mat-option *ngFor="let collection of markerCollection | async" [value]="collection">
+                        {{collection.collectionName}}
                     </mat-option>
                     </mat-autocomplete>
                 </mat-form-field>
@@ -40,16 +40,20 @@
 <br>
 <mat-card>
     <mat-card-content> 
-        <ng-template [ngIf]="markerCollection['collectionNames'].length === 0">
-            <p style="text-align: center;">No Collections to Show.</p>
-        </ng-template>
-        <ng-template [ngIf]="markerCollection['collectionNames'].length != 0">
-            <mat-selection-list #collectionList [(ngModel)]="selectedCollections" (ngModelChange)="changeSelectedCollections()">
-                <mat-list-option *ngFor="let name of markerCollection['collectionNames']" [value]="name">
-                  {{name}}
-                </mat-list-option>
-              </mat-selection-list>
-        </ng-template>
+        <div *ngIf="markerCollection | async as collections">
+            <ng-template [ngIf]="(collections | json) == ([] | json)">
+                <p style="text-align: center;">No Collections to Show.</p>
+            </ng-template>
+            <ng-template [ngIf]="(collections | json) != ([] | json)">
+                <mat-selection-list #collectionList [(ngModel)]="selectedCollections" (ngModelChange)="changeSelectedCollections()">
+                    <mat-list-option *ngFor="let name of collections">
+                        {{name.collectionName}}
+                    </mat-list-option>
+                </mat-selection-list>
+            </ng-template>
+        </div>
     </mat-card-content>
 </mat-card>
+
+
 

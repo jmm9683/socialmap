@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { DataService } from '../data.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AngularFireDatabase } from '@angular/fire/database'; 
+import { Observable } from 'rxjs';
 
 
 @Component({
@@ -11,11 +13,15 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 export class MarkercollectionComponent implements OnInit {
   geocoderObject: object;
   geocoderFlag: boolean;
-  markerCollection: object;
   markerForm: FormGroup;
   selectedCollections: Array<String>;
+  private user = "BurgerMilkshake"
+  markerCollection: object;
+
  
-  constructor(private data: DataService, private formBuilder: FormBuilder) { }
+  constructor(private data: DataService, private formBuilder: FormBuilder, public db: AngularFireDatabase ) { 
+    this.markerCollection = db.list('users/' + this.user + '/markerCollection').valueChanges();
+  }
   
   ngOnInit() {
     this.data.currentGeocoderObject.subscribe(geocoderObject => {this.geocoderObject = geocoderObject;
@@ -28,10 +34,7 @@ export class MarkercollectionComponent implements OnInit {
       })
     });
     this.data.currentGeocoderFlag.subscribe(geocoderFlag => this.geocoderFlag = geocoderFlag);
-    this.data.currentMarkerCollection.subscribe(markerCollection => this.markerCollection = markerCollection);
     this.data.currentSelectedCollections.subscribe(selectedCollections => this.selectedCollections = selectedCollections);
-
-    this.data.getCollections("BurgerMilkshake");
 
   }
 
@@ -44,28 +47,15 @@ export class MarkercollectionComponent implements OnInit {
     let collection = this.markerForm.controls['collection'].value;
     let longitude = this.markerForm.controls['longitude'].value;
     let lattitude = this.markerForm.controls['lattitude'].value;
-    let newCollection = {
-      [collection] : [{
-          "type": 'Feature',
-          "geometry": {
-            "type": 'Point',
-            "coordinates": [[longitude], [lattitude]]
-          }
-      }]
+    let newMarker = {
+      "type": 'Feature',
+      "geometry": {
+        "type": 'Point',
+        "coordinates": [[longitude], [lattitude]]
+      }
     };
-
-    //if a new collection
-    if (!this.markerCollection["collectionNames"].includes(collection)){
-      this.markerCollection["collectionNames"].push(collection);
-      this.markerCollection['markerCollection'].push(newCollection);
-      this.data.postCollections(this.markerCollection);
-    }
-    else{
-      //!!
-      let collectionIndex = this.markerCollection["collectionNames"].indexOf(collection);
-      this.markerCollection['markerCollection'][collectionIndex][collection].push(newCollection[collection][0]);
-      this.data.postCollections(this.markerCollection);
-    }
+    this.db.list("users/" + this.user + "/markerCollection/" + collection).push(newMarker);
+    this.db.list("users/" + this.user + "/markerCollection/" + collection).set("collectionName", collection);
     this.data.changeGeocoderFlag(false);
   }
 
