@@ -1,5 +1,8 @@
 <h1 style="text-align: center;">SocialMapp</h1>
-<ngx-auth-firebaseui></ngx-auth-firebaseui>
-<app-markercollection></app-markercollection>
+<ng-template  [ngIf]="userData != null">
+    <app-markercollection></app-markercollection>
+</ng-template>
+<ngx-auth-firebaseui [guestEnabled]="false" [providers]="[providers.Google]" ></ngx-auth-firebaseui>
+
 
 

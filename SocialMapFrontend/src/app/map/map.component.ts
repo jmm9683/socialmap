@@ -1,9 +1,10 @@
 import { environment } from '../../environments/environment';
-import { Component, OnInit, AfterViewInit } from '@angular/core';
-import { DataService } from '../data.service';
+import { Component, OnInit, AfterViewInit, Input } from '@angular/core';
+import { DataService } from '../services/data.service';
 import * as mapboxgl from 'mapbox-gl';
 import * as MapboxGeocoder from '@mapbox/mapbox-gl-geocoder';
 import { AngularFireDatabase } from '@angular/fire/database'; 
+import { AngularFireAuth } from '@angular/fire/auth';
 import { Observable } from 'rxjs';
 
 
@@ -28,9 +29,18 @@ export class MapComponent implements OnInit, AfterViewInit {
   // markers saved here
   currentMarkers =  [];
 
-  private user = "BurgerMilkshake"
+  userData = {
+    uid: null
+  }; 
 
-  constructor(private data: DataService, public db: AngularFireDatabase ) {}
+  constructor(private data: DataService, public db: AngularFireDatabase, private afAuth: AngularFireAuth ) {
+    this.afAuth.onAuthStateChanged((user) => {
+      this.userData = user;
+      if (this.userData == null){
+        this.clearMarkers();
+      }
+    });
+  }
   
   ngOnInit() {
     this.data.currentGeocoderObject.subscribe(geocoderObject => this.geocoderObject = geocoderObject);
@@ -77,14 +87,8 @@ export class MapComponent implements OnInit, AfterViewInit {
 
   DisplayMarkersOnMap(){
 
-    this.db.list('users/' + this.user + '/markerCollection').valueChanges().subscribe(snapshots => {
-      for (let i = 0; i < this.currentMarkers.length; i++){
-        console.log(this.currentMarkers);
-        let id = 'marker' + i;
-        this.map.removeLayer(id);
-        this.map.removeSource(id);
-        
-      }
+    this.db.list('users/' + this.userData["uid"] + '/markerCollection').valueChanges().subscribe(snapshots => {
+      this.clearMarkers();
       this.currentMarkers = [];
 
       snapshots.forEach((snapshot: object) => {
@@ -125,6 +129,16 @@ export class MapComponent implements OnInit, AfterViewInit {
       }
 
     })
+  }
+
+  clearMarkers(){
+    for (let i = 0; i < this.currentMarkers.length; i++){
+      console.log(this.currentMarkers);
+      let id = 'marker' + i;
+      this.map.removeLayer(id);
+      this.map.removeSource(id);
+      
+    }
   }
 }
 	  

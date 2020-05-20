@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { DataService } from '../data.service';
+import { Component, OnInit, Input } from '@angular/core';
+import { DataService } from '../services/data.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AngularFireDatabase } from '@angular/fire/database'; 
+import { AngularFireAuth } from '@angular/fire/auth';
 import { Observable } from 'rxjs';
 
 
@@ -15,12 +16,18 @@ export class MarkercollectionComponent implements OnInit {
   geocoderFlag: boolean;
   markerForm: FormGroup;
   selectedCollections: Array<String>;
-  private user = "BurgerMilkshake"
   markerCollection: object;
 
+  userData = {
+    uid: null
+  }; 
  
-  constructor(private data: DataService, private formBuilder: FormBuilder, public db: AngularFireDatabase ) { 
-    this.markerCollection = db.list('users/' + this.user + '/markerCollection').valueChanges();
+  constructor(private data: DataService, private formBuilder: FormBuilder, public db: AngularFireDatabase, private afAuth: AngularFireAuth ) {
+    this.afAuth.onAuthStateChanged((user) => {
+      this.userData = user;
+      this.markerCollection = db.list('users/' + this.userData["uid"] + '/markerCollection').valueChanges();
+    });
+    
   }
   
   ngOnInit() {
@@ -54,8 +61,8 @@ export class MarkercollectionComponent implements OnInit {
         "coordinates": [[longitude], [lattitude]]
       }
     };
-    this.db.list("users/" + this.user + "/markerCollection/" + collection).push(newMarker);
-    this.db.list("users/" + this.user + "/markerCollection/" + collection).set("collectionName", collection);
+    this.db.list("users/" + this.userData["uid"] + "/markerCollection/" + collection).push(newMarker);
+    this.db.list("users/" + this.userData["uid"] + "/markerCollection/" + collection).set("collectionName", collection);
     this.data.changeGeocoderFlag(false);
   }
 

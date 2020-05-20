@@ -1,7 +1,6 @@
 import { Injectable, EventEmitter } from '@angular/core';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Subscription } from 'rxjs/internal/Subscription';
-import { HttpClient, HttpHeaders } from '@angular/common/http';  
 import { AngularFireDatabase } from '@angular/fire/database'; 
 import { Observable } from 'rxjs';
 
@@ -22,7 +21,7 @@ export class DataService {
     private selectedCollections = new BehaviorSubject<Array<String>>([]);
     currentSelectedCollections = this.selectedCollections.asObservable();
 
-    constructor(private http: HttpClient, public db: AngularFireDatabase ) {}
+    constructor() {}
 
     changeGeocoderFlag(flag: boolean){
         this.geocoderFlag.next(flag);

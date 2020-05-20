@@ -18,9 +18,9 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgxAuthFirebaseUIModule } from 'ngx-auth-firebaseui';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { OmniwindowComponent } from './omniwindow/omniwindow.component';
-import { DataService } from './data.service';
+import { DataService } from './services/data.service';
+import { UserService } from './services/user.service';
 import { MarkercollectionComponent } from './markercollection/markercollection.component';
-import { HttpClientModule } from '@angular/common/http';
 import { AngularFireModule } from '@angular/fire';
 import { AngularFireDatabaseModule } from '@angular/fire/database';
 import { environment } from '../environments/environment';
@@ -48,13 +48,12 @@ import { environment } from '../environments/environment';
     MatChipsModule,
     MatCardModule,
     MatAutocompleteModule,
-    HttpClientModule,
     AngularFireModule.initializeApp(environment.firebase),
     AngularFireDatabaseModule,
     NgxAuthFirebaseUIModule.forRoot(environment.firebase),
     FlexLayoutModule
   ],
-  providers: [DataService],
+  providers: [DataService, UserService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
