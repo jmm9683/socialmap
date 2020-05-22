@@ -4,6 +4,7 @@ import { AngularFireAuth } from '@angular/fire/auth';
 import * as firebase from 'firebase';
 
 import 'rxjs/add/operator/switchMap';
+import {switchMap} from 'rxjs/operators';
 
 @Injectable()
 
@@ -16,16 +17,18 @@ export class UserService {
     
     constructor(private afAuth: AngularFireAuth, private db: AngularFireDatabase){
 
-        this.afAuth.onAuthStateChanged(user => {
-            if (user != null){
-                this.currentUser.uid = user.uid;
-                this.currentUser.username =  this.db.object(`/users/${this.currentUser.uid}/username`);
+        this.afAuth.authState.pipe( switchMap (user => {
+            if (user){
+                this.currentUser.uid = user['uid'];
+                return this.db.object(`/users/${user['uid']}`).valueChanges();
             }
             else{
                 this.currentUser.uid = null;
                 this.currentUser.username = null;
             }
             
+        })).subscribe(user => {
+            this.currentUser['username'] = user['username']
         })
 
     }

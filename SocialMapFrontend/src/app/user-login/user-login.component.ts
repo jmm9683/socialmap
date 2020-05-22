@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { UserService } from '../services/user.service';
 import { AuthProvider } from 'ngx-auth-firebaseui';
+import { AngularFireDatabase } from '@angular/fire/database'; 
 
 @Component({
   selector: 'app-user-login',
@@ -13,10 +14,12 @@ export class UserLoginComponent {
   usernameText: string;
   usernameAvailable: boolean;
 
-  constructor(public user: UserService) { }
+  constructor(public user: UserService, private db: AngularFireDatabase) { }
 
   
   checkUsername() {
+    console.log(this.user.currentUser)
+    console.log(this.user.hasUsername)
     this.user.checkUsername(this.usernameText).valueChanges().subscribe(username => {
       this.usernameAvailable = (username == null)
     })
@@ -29,4 +32,5 @@ export class UserLoginComponent {
   logout(){
     this.user.logout();
   }
+
 }

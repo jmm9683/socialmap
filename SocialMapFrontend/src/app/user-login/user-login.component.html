@@ -1,18 +1,19 @@
-<h1>Please Login...</h1>
-    
     <div *ngIf="!user.isLoggedIn">
+        <h1>Please Login...</h1>
         <ngx-auth-firebaseui [guestEnabled]="false" [providers]="[providers.Google]" ></ngx-auth-firebaseui>
         <!-- <ngx-auth-firebaseui-providers layout="column" thene="outline" [providers]="[providers.Google]"></ngx-auth-firebaseui-providers> -->
     </div>
 
+<div style="text-align: center;">
+    <button   type="button" class="button"
+    *ngIf="user.isLoggedIn"
+    (click)="logout()">
+     Logout
+    </button>
+</div>
 
-<button  type="button" class="button"
-         *ngIf="user.isLoggedIn"
-         (click)="logout()">
-          Logout
-</button>
 
-<div *ngIf="user.isLoggedIn && !user.hasUsername">
+<div style="text-align: center;" *ngIf="user.isLoggedIn && !user.hasUsername"> 
 
   <h3>Choose a Username</h3>
 
