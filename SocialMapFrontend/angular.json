@@ -29,7 +29,7 @@
                 }
             ],
             "styles": [
-              "styles.css",
+              "src/styles.css",
               "node_modules/material-design-icons/iconfont/material-icons.css"
             ],
             "scripts": []
@@ -100,7 +100,7 @@
                 }
             ],
             "styles": [
-              "styles.css",
+              "src/styles.css",
               "node_modules/material-design-icons/iconfont/material-icons.css"
             ],
             "scripts": []
