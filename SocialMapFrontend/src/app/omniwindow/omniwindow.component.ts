@@ -1,7 +1,7 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { DataService } from '../services/data.service';
-import { AuthProvider } from 'ngx-auth-firebaseui';
-import { AngularFireAuth } from '@angular/fire/auth';
+import { UserService } from '../services/user.service';
+
 
 
 @Component({
@@ -11,13 +11,7 @@ import { AngularFireAuth } from '@angular/fire/auth';
 })
 export class OmniwindowComponent implements OnInit {
 
-  providers = AuthProvider;
-  userData;
-  constructor(private data: DataService, private afAuth: AngularFireAuth) { 
-    this.afAuth.onAuthStateChanged((user) => {
-      this.userData = user;
-    });
-  }
+  constructor(private data: DataService, private user: UserService) {}
 
   ngOnInit() {}
 

@@ -24,13 +24,15 @@ import { MarkercollectionComponent } from './markercollection/markercollection.c
 import { AngularFireModule } from '@angular/fire';
 import { AngularFireDatabaseModule } from '@angular/fire/database';
 import { environment } from '../environments/environment';
+import { UserLoginComponent } from './user-login/user-login.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     MapComponent,
     OmniwindowComponent,
-    MarkercollectionComponent
+    MarkercollectionComponent,
+    UserLoginComponent
   ],
   imports: [
     BrowserModule,

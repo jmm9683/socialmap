@@ -25,7 +25,12 @@ export class MarkercollectionComponent implements OnInit {
   constructor(private data: DataService, private formBuilder: FormBuilder, public db: AngularFireDatabase, private afAuth: AngularFireAuth ) {
     this.afAuth.onAuthStateChanged((user) => {
       this.userData = user;
-      this.markerCollection = db.list('users/' + this.userData["uid"] + '/markerCollection').valueChanges();
+      if (this.userData){
+        this.markerCollection = db.list('users/' + this.userData["uid"] + '/markerCollection').valueChanges();
+      }
+      else {
+        this.markerCollection = null;
+      }
     });
     
   }
