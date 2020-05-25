@@ -1,0 +1,66 @@
+
+
+<mat-card>
+    <mat-card-content>
+        <ng-template [ngIf]="geocoderFlag">
+            <form [formGroup]="markerForm">
+                <mat-form-field>
+                    <input matInput placeholder="Name" formControlName="name">
+                </mat-form-field>
+                <br>
+                <mat-form-field>
+                    <input matInput [ngxMatDatetimePicker]="picker" placeholder="Choose a date" formControlName="time"
+                        [min]="minDate" [max]="maxDate" [disabled]="disabled">
+                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                    <ngx-mat-datetime-picker #picker [showSpinners]="showSpinners" [showSeconds]="showSeconds"
+                        [stepHour]="stepHour" [stepMinute]="stepMinute" [stepSecond]="stepSecond"
+                        [touchUi]="touchUi" [color]="color" [enableMeridian]="enableMeridian" 
+                        [disableMinute]="disableMinute" [hideTime]="hideTime">
+                    </ngx-mat-datetime-picker>
+                </mat-form-field>
+                <br>
+                <mat-form-field>
+                    <input matInput placeholder="Address" formControlName="address">
+                </mat-form-field>
+                <br>
+                <mat-form-field>
+                    <input matInput placeholder="Description" formControlName="description">
+                </mat-form-field>
+                <!-- <mat-form-field>
+                    <input matInput placeholder="Longitude" formControlName="longitude">
+                </mat-form-field>
+                <mat-form-field>
+                    <input matInput placeholder="Lattitude" formControlName="lattitude">
+                </mat-form-field> -->
+                <mat-card-actions>
+                    <button [disabled]="!markerForm.valid" (click)="addMarker()" mat-button color="primary">Publish Broadcast</button>
+                </mat-card-actions>
+                    <button (click)="this.data.changeGeocoderFlag(false)" mat-button color="warn">Cancel</button>
+            </form>
+        </ng-template>
+        <ng-template [ngIf]="!geocoderFlag">
+            <p style="text-align: center;">Search a Location to Add to a Broadcast.</p>
+        </ng-template>
+    </mat-card-content>
+</mat-card>
+<br>
+<mat-card>
+    <mat-card-content> 
+        <div *ngIf="markerBroadcasts | async as broadcasts">
+            <ng-template [ngIf]="(broadcasts | json) == ([] | json)">
+                <p style="text-align: center;">No Broadcasts to Show.</p>
+            </ng-template>
+            <ng-template [ngIf]="(broadcasts | json) != ([] | json)">
+                <mat-selection-list #collectionList [(ngModel)]="selectedBroadcasts" (ngModelChange)="changeSelectedBroadcasts()">
+                    <mat-list-option *ngFor="let name of broadcasts" [value]="name.broadcastName">
+                        {{name.broadcastName}}
+                    </mat-list-option>
+                </mat-selection-list>
+            </ng-template>
+        </div>
+    </mat-card-content>
+</mat-card>
+
+
+
+

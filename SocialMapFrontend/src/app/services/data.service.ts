@@ -20,6 +20,9 @@ export class DataService {
 
     private selectedCollections = new BehaviorSubject<Array<String>>([]);
     currentSelectedCollections = this.selectedCollections.asObservable();
+    
+    private selectedBroadcasts = new BehaviorSubject<Array<String>>([]);
+    currentSelectedBroadcasts = this.selectedBroadcasts.asObservable();
 
     constructor() {}
 
@@ -33,6 +36,10 @@ export class DataService {
     
     changeSelectedCollections(name: Array<String>){
         this.selectedCollections.next(name);
+    }
+
+    changeSelectedBroadcasts(name: Array<String>){
+        this.selectedBroadcasts.next(name);
     }
 
     invokeDisplayMarkers = new EventEmitter();    
