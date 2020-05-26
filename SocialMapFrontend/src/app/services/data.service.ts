@@ -38,16 +38,23 @@ export class DataService {
         this.selectedCollections.next(name);
     }
 
-    changeSelectedBroadcasts(name: Array<String>){
+    changeSelectedBroadcasts(name: Array<any>){
         this.selectedBroadcasts.next(name);
     }
 
-    invokeDisplayMarkers = new EventEmitter();    
-    displayMakerSub: Subscription;
+    invokeDisplayCollections = new EventEmitter();    
+    displayCollectionSub: Subscription;
 
-    DisplayMarkersOnMap() {    
-        this.invokeDisplayMarkers.emit();    
-      } 
+    DisplayCollectionsOnMap() {    
+        this.invokeDisplayCollections.emit();    
+      }
+
+    invokeDisplayBroadcasts = new EventEmitter();    
+    displayBroadcastSub: Subscription;
+
+    DisplayBroadcastsOnMap(){
+        this.invokeDisplayBroadcasts.emit();
+    }
 
     private handleError(error){
         console.error(error);

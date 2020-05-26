@@ -24,7 +24,7 @@ export class MarkerbroadcastComponent implements OnInit {
   geocoderObject: object;
   geocoderFlag: boolean;
   markerForm: FormGroup;
-  selectedBroadcasts: Array<String>;
+  selectedBroadcasts: Array<any>;
   markerBroadcasts: Array<any>;
   minDate
 
@@ -60,6 +60,7 @@ export class MarkerbroadcastComponent implements OnInit {
         db.list(`users/${this.userData["uid"]}/markerBroadcasts`).valueChanges().subscribe( data => {
           this.markerBroadcasts = data;
           this.dataSource = new MatTableDataSource<Broadcast>(this.markerBroadcasts);
+          this.dataSource.sort = this.sort;
         })
 
       }
@@ -86,7 +87,6 @@ export class MarkerbroadcastComponent implements OnInit {
     const now = new Date();
     this.minDate = new Date();
     this.minDate.setDate(now.getDate());
-    this.dataSource.sort = this.sort;
   
   }
 
@@ -117,10 +117,9 @@ export class MarkerbroadcastComponent implements OnInit {
   }
 
   changeSelectedBroadcasts(){
-    console.log(this.markerBroadcasts)
-    console.log(this.dataSource)
-    // this.data.changeSelectedBroadcasts(this.selectedBroadcasts);
-    // this.data.DisplayMarkersOnMap(); 
+    this.selectedBroadcasts = this.selection.selected;
+    this.data.changeSelectedBroadcasts(this.selectedBroadcasts);
+    this.data.DisplayBroadcastsOnMap(); 
   }
 
 

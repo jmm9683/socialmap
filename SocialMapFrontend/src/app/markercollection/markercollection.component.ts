@@ -73,7 +73,7 @@ export class MarkercollectionComponent implements OnInit {
 
   changeSelectedCollections(){
     this.data.changeSelectedCollections(this.selectedCollections);
-    this.data.DisplayMarkersOnMap(); 
+    this.data.DisplayCollectionsOnMap(); 
   }
 
 

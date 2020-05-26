@@ -60,18 +60,19 @@
                     <mat-label>Filter</mat-label>
                     <input matInput (keyup)="applyFilter($event)" placeholder="Ex. ium">
                 </mat-form-field>                  
-                <mat-table #table [dataSource]="dataSource" matSort>
+                <mat-table #table [dataSource]="dataSource">
                     <!-- Checkbox Column -->
                     <ng-container matColumnDef="select">
                       <mat-header-cell *matHeaderCellDef>
-                        <mat-checkbox (change)="$event ? masterToggle() : null"
+                        <mat-checkbox (change)="$event ? masterToggle() : null; changeSelectedBroadcasts()"
                                       [checked]="selection.hasValue() && isAllSelected()"
-                                      [indeterminate]="selection.hasValue() && !isAllSelected()">
+                                      [indeterminate]="selection.hasValue() && !isAllSelected()"
+                                      (ngModelChange)="changeSelectedBroadcasts()">
                         </mat-checkbox>
                       </mat-header-cell>
                       <mat-cell *matCellDef="let row">
-                        <mat-checkbox (click)="$event.stopPropagation()"
-                                      (change)="$event ? selection.toggle(row) : null"
+                        <mat-checkbox (click)="$event.stopPropagation();"
+                                      (change)="$event ? selection.toggle(row) : null; changeSelectedBroadcasts()"
                                       [checked]="selection.isSelected(row)">
                         </mat-checkbox>
                       </mat-cell>
@@ -81,25 +82,25 @@
                 
                     <!-- Name Column -->
                     <ng-container matColumnDef="name">
-                      <mat-header-cell *matHeaderCellDef mat-sort-header> Name </mat-header-cell>
+                      <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
                       <mat-cell *matCellDef="let element"> {{element.broadcastName}} </mat-cell>
                     </ng-container>
                 
                     <!-- Weight Column -->
                     <ng-container matColumnDef="description">
-                      <mat-header-cell *matHeaderCellDef mat-sort-header> Description </mat-header-cell>
+                      <mat-header-cell *matHeaderCellDef> Description </mat-header-cell>
                       <mat-cell *matCellDef="let element"> {{element.description}} </mat-cell>
                     </ng-container>
                 
                     <!-- Symbol Column -->
                     <ng-container matColumnDef="time">
-                      <mat-header-cell *matHeaderCellDef mat-sort-header> Time </mat-header-cell>
+                      <mat-header-cell *matHeaderCellDef> Time </mat-header-cell>
                       <mat-cell *matCellDef="let element"> {{element.time | date:'MM/dd/yyyy'}} </mat-cell>
                     </ng-container>
                 
                     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
                     <mat-row *matRowDef="let row; columns: displayedColumns;"
-                             (click)="selection.toggle(row)">
+                             (click)="selection.toggle(row);">
                     </mat-row>
                 </mat-table>
             </ng-template>
