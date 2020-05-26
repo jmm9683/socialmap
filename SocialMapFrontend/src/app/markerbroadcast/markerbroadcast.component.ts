@@ -1,10 +1,18 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, ViewChild } from '@angular/core';
 import { DataService } from '../services/data.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AngularFireDatabase } from '@angular/fire/database'; 
 import { AngularFireAuth } from '@angular/fire/auth';
 import { Observable } from 'rxjs';
+import { MatTableDataSource } from '@angular/material';
+import { SelectionModel } from '@angular/cdk/collections';
+import { MatSort } from '@angular/material/sort';
 
+export interface Broadcast {
+  broadcastName: string;
+  time: Number;
+  description: string;
+}
 
 
 @Component({
@@ -17,8 +25,29 @@ export class MarkerbroadcastComponent implements OnInit {
   geocoderFlag: boolean;
   markerForm: FormGroup;
   selectedBroadcasts: Array<String>;
-  markerBroadcasts: object;
+  markerBroadcasts: Array<any>;
   minDate
+
+  displayedColumns = ['select', 'time', 'name', 'description'];
+  dataSource
+  selection = new SelectionModel<Broadcast>(true, []);
+  isAllSelected() {
+    const numSelected = this.selection.selected.length;
+    const numRows = this.dataSource.data.length;
+    return numSelected === numRows;
+  }
+  /** Selects all rows if they are not all selected; otherwise clear selection. */
+  masterToggle() {
+    this.isAllSelected() ?
+        this.selection.clear() :
+        this.dataSource.data.forEach(row => this.selection.select(row));
+  }
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+  }
+  @ViewChild(MatSort, {static: true}) sort: MatSort;
+
 
   userData = {
     uid: null
@@ -28,7 +57,11 @@ export class MarkerbroadcastComponent implements OnInit {
     this.afAuth.onAuthStateChanged((user) => {
       this.userData = user;
       if (this.userData){
-        this.markerBroadcasts = db.list(`users/${this.userData["uid"]}/markerBroadcasts`).valueChanges();
+        db.list(`users/${this.userData["uid"]}/markerBroadcasts`).valueChanges().subscribe( data => {
+          this.markerBroadcasts = data;
+          this.dataSource = new MatTableDataSource<Broadcast>(this.markerBroadcasts);
+        })
+
       }
       else {
         this.markerBroadcasts = null;
@@ -53,6 +86,7 @@ export class MarkerbroadcastComponent implements OnInit {
     const now = new Date();
     this.minDate = new Date();
     this.minDate.setDate(now.getDate());
+    this.dataSource.sort = this.sort;
   
   }
 
@@ -83,8 +117,10 @@ export class MarkerbroadcastComponent implements OnInit {
   }
 
   changeSelectedBroadcasts(){
-    this.data.changeSelectedBroadcasts(this.selectedBroadcasts);
-    this.data.DisplayMarkersOnMap(); 
+    console.log(this.markerBroadcasts)
+    console.log(this.dataSource)
+    // this.data.changeSelectedBroadcasts(this.selectedBroadcasts);
+    // this.data.DisplayMarkersOnMap(); 
   }
 
 

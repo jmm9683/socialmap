@@ -33,6 +33,8 @@ import { AngularFireDatabaseModule } from '@angular/fire/database';
 import { environment } from '../environments/environment';
 import { UserLoginComponent } from './user-login/user-login.component';
 import { MarkerbroadcastComponent } from './markerbroadcast/markerbroadcast.component';
+import { MatTableModule } from '@angular/material';
+import { MatSortModule } from '@angular/material';
 
 @NgModule({
   declarations: [
@@ -59,6 +61,7 @@ import { MarkerbroadcastComponent } from './markerbroadcast/markerbroadcast.comp
     MatCheckboxModule,
     MatChipsModule,
     MatCardModule,
+    MatTableModule,
     MatToolbarModule,
     MatExpansionModule,
     MatAutocompleteModule,
@@ -71,7 +74,8 @@ import { MarkerbroadcastComponent } from './markerbroadcast/markerbroadcast.comp
     NgxMatNativeDateModule,
     MatDatepickerModule,
     MatIconModule,
-    MatRadioModule
+    MatRadioModule,
+    MatSortModule
 
 
   ],

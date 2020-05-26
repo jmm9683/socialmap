@@ -46,20 +46,67 @@
 <br>
 <mat-card>
     <mat-card-content> 
-        <div *ngIf="markerBroadcasts | async as broadcasts">
+        <div *ngIf="markerBroadcasts as broadcasts">
             <ng-template [ngIf]="(broadcasts | json) == ([] | json)">
                 <p style="text-align: center;">No Broadcasts to Show.</p>
             </ng-template>
             <ng-template [ngIf]="(broadcasts | json) != ([] | json)">
-                <mat-selection-list #collectionList [(ngModel)]="selectedBroadcasts" (ngModelChange)="changeSelectedBroadcasts()">
+                <!-- <mat-selection-list #collectionList [(ngModel)]="selectedBroadcasts" (ngModelChange)="changeSelectedBroadcasts()">
                     <mat-list-option *ngFor="let name of broadcasts" [value]="name.broadcastName">
                         {{name.broadcastName}}
                     </mat-list-option>
-                </mat-selection-list>
+                </mat-selection-list> -->
+                <mat-form-field>
+                    <mat-label>Filter</mat-label>
+                    <input matInput (keyup)="applyFilter($event)" placeholder="Ex. ium">
+                </mat-form-field>                  
+                <mat-table #table [dataSource]="dataSource" matSort>
+                    <!-- Checkbox Column -->
+                    <ng-container matColumnDef="select">
+                      <mat-header-cell *matHeaderCellDef>
+                        <mat-checkbox (change)="$event ? masterToggle() : null"
+                                      [checked]="selection.hasValue() && isAllSelected()"
+                                      [indeterminate]="selection.hasValue() && !isAllSelected()">
+                        </mat-checkbox>
+                      </mat-header-cell>
+                      <mat-cell *matCellDef="let row">
+                        <mat-checkbox (click)="$event.stopPropagation()"
+                                      (change)="$event ? selection.toggle(row) : null"
+                                      [checked]="selection.isSelected(row)">
+                        </mat-checkbox>
+                      </mat-cell>
+                    </ng-container>
+                
+                    <!-- Position Column -->
+                
+                    <!-- Name Column -->
+                    <ng-container matColumnDef="name">
+                      <mat-header-cell *matHeaderCellDef mat-sort-header> Name </mat-header-cell>
+                      <mat-cell *matCellDef="let element"> {{element.broadcastName}} </mat-cell>
+                    </ng-container>
+                
+                    <!-- Weight Column -->
+                    <ng-container matColumnDef="description">
+                      <mat-header-cell *matHeaderCellDef mat-sort-header> Description </mat-header-cell>
+                      <mat-cell *matCellDef="let element"> {{element.description}} </mat-cell>
+                    </ng-container>
+                
+                    <!-- Symbol Column -->
+                    <ng-container matColumnDef="time">
+                      <mat-header-cell *matHeaderCellDef mat-sort-header> Time </mat-header-cell>
+                      <mat-cell *matCellDef="let element"> {{element.time | date:'MM/dd/yyyy'}} </mat-cell>
+                    </ng-container>
+                
+                    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                    <mat-row *matRowDef="let row; columns: displayedColumns;"
+                             (click)="selection.toggle(row)">
+                    </mat-row>
+                </mat-table>
             </ng-template>
         </div>
     </mat-card-content>
 </mat-card>
+
 
 
 
