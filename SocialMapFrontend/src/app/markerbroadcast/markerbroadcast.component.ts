@@ -1,5 +1,6 @@
 import { Component, OnInit, Input, ViewChild } from '@angular/core';
 import { DataService } from '../services/data.service';
+import { UserService } from '../services/user.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AngularFireDatabase } from '@angular/fire/database'; 
 import { AngularFireAuth } from '@angular/fire/auth';
@@ -53,11 +54,11 @@ export class MarkerbroadcastComponent implements OnInit {
     uid: null
   }; 
  
-  constructor(private data: DataService, private formBuilder: FormBuilder, public db: AngularFireDatabase, private afAuth: AngularFireAuth ) {
+  constructor(private data: DataService, private formBuilder: FormBuilder, public db: AngularFireDatabase, private afAuth: AngularFireAuth, public user: UserService ) {
     this.afAuth.onAuthStateChanged((user) => {
       this.userData = user;
       if (this.userData){
-        db.list(`users/${this.userData["uid"]}/markerBroadcasts`).valueChanges().subscribe( data => {
+        db.list(`markerBroadcasts/${this.userData["uid"]}/`).valueChanges().subscribe( data => {
           this.markerBroadcasts = data;
           this.dataSource = new MatTableDataSource<Broadcast>(this.markerBroadcasts);
           this.dataSource.sort = this.sort;
@@ -102,6 +103,7 @@ export class MarkerbroadcastComponent implements OnInit {
     let longitude = this.markerForm.controls['longitude'].value;
     let lattitude = this.markerForm.controls['lattitude'].value;
     let newMarker = {
+      "owner": this.user.currentUser.username,
       "broadcastName": name,
       "description": description,
       "time": time.getTime(),
@@ -112,7 +114,7 @@ export class MarkerbroadcastComponent implements OnInit {
       }
     };
 
-    this.db.list(`users/${this.userData["uid"]}/markerBroadcasts/`).push(newMarker);
+    this.db.list(`markerBroadcasts/${this.userData["uid"]}/`).push(newMarker);
     this.data.changeGeocoderFlag(false);
   }
 

@@ -94,7 +94,7 @@ export class MapComponent implements OnInit, AfterViewInit {
 
   DisplayCollectionsOnMap(){
 
-    this.db.list('users/' + this.userData["uid"] + '/markerCollection').valueChanges().subscribe(snapshots => {
+    this.db.list(`markerCollections/${this.userData["uid"]}/`).valueChanges().subscribe(snapshots => {
       this.clearMarkers("collection");
       this.currentCollectionMarkers = [];
 
