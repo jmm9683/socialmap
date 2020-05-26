@@ -35,6 +35,8 @@ import { UserLoginComponent } from './user-login/user-login.component';
 import { MarkerbroadcastComponent } from './markerbroadcast/markerbroadcast.component';
 import { MatTableModule } from '@angular/material';
 import { MatSortModule } from '@angular/material';
+import { SocialComponent } from './social/social.component';
+import { AccountSettingsComponent } from './account-settings/account-settings.component';
 
 @NgModule({
   declarations: [
@@ -43,7 +45,9 @@ import { MatSortModule } from '@angular/material';
     OmniwindowComponent,
     MarkercollectionComponent,
     UserLoginComponent,
-    MarkerbroadcastComponent
+    MarkerbroadcastComponent,
+    SocialComponent,
+    AccountSettingsComponent
   ],
   imports: [
     CommonModule,

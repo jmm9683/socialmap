@@ -46,12 +46,13 @@ export class UserService {
         return this.db.object(`usernames/${username}`)
     }
   
+
     updateUsername(username: string) {
         let data = {}
         data[username.toLowerCase()] = this.currentUser.uid;
         this.currentUser.username = username;
   
-        this.db.object(`/users/${this.currentUser.uid}`).update({"username": username})
+        this.db.object(`/users/${this.currentUser.uid}`).update({"username": username.toLowerCase()})
         this.db.object(`/usernames`).update(data)
     }
 
