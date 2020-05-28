@@ -35,6 +35,8 @@ import { UserLoginComponent } from './user-login/user-login.component';
 import { MarkerbroadcastComponent } from './markerbroadcast/markerbroadcast.component';
 import { MatTableModule } from '@angular/material';
 import { MatSortModule } from '@angular/material';
+import { MatSliderModule } from '@angular/material/slider';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { SocialComponent } from './social/social.component';
 import { AccountSettingsComponent } from './account-settings/account-settings.component';
 
@@ -79,7 +81,9 @@ import { AccountSettingsComponent } from './account-settings/account-settings.co
     MatDatepickerModule,
     MatIconModule,
     MatRadioModule,
-    MatSortModule
+    MatSortModule,
+    MatSliderModule,
+    MatSlideToggleModule
 
 
   ],

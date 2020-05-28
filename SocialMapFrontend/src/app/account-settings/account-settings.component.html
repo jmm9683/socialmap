@@ -1,6 +1,56 @@
 <div *ngIf="accountInfo | async as info">
     <ng-template [ngIf]="thisAccount()">
-        <p>Hey {{info.username}}!</p>
+        <span mat-line>Hey {{info.username}}!</span>
+        <mat-expansion-panel>
+            <mat-expansion-panel-header>
+                <mat-panel-title>
+                    Followers
+                </mat-panel-title>
+                <mat-panel-description>
+                    {{followers.length}}
+                </mat-panel-description>
+            </mat-expansion-panel-header>
+            <mat-list>
+                <mat-list-item *ngFor="let follower of followers">
+                    <span mat-line>{{follower.username}}</span>
+                    <button mat-stroked-button (click)="removeFollower(follower.uid)">Remove</button>
+                </mat-list-item>
+            </mat-list>
+        </mat-expansion-panel>
+        <mat-expansion-panel>
+            <mat-expansion-panel-header>
+                <mat-panel-title>
+                    Following
+                </mat-panel-title>
+                <mat-panel-description>
+                    {{following.length}}
+                </mat-panel-description>
+            </mat-expansion-panel-header>
+            <mat-list>
+                <mat-list-item *ngFor="let thisFollowing of following">
+                    <span mat-line>{{thisFollowing.username}}</span>
+                    <button mat-stroked-button (click)="unfollow(thisFollowing.uid)">Unfollow</button>
+                </mat-list-item>
+            </mat-list>
+        </mat-expansion-panel>
+        <mat-expansion-panel>
+            <mat-expansion-panel-header>
+                <mat-panel-title>
+                    Requests
+                </mat-panel-title>
+                <mat-panel-description>
+                    {{followRequests.length}}
+                </mat-panel-description>
+              </mat-expansion-panel-header>
+            <mat-list>
+                <mat-list-item *ngFor="let requests of followRequests">
+                    <span mat-line>{{requests.username}}</span>
+                    <button mat-stroked-button (click)="acceptRequest(requests.uid)">Accept</button>
+                    <button mat-stroked-button (click)="cancelRequest(requests.uid)">Cancel</button>
+                </mat-list-item>
+            </mat-list>
+        </mat-expansion-panel>
+        Private Account Switch: <mat-slide-toggle [(ngModel)]="isPrivate" (click)="changePrivacy()"></mat-slide-toggle>
     </ng-template>
     <ng-template [ngIf]="!thisAccount()">
                 <ng-template [ngIf]="!requestFlag && !followFlag">
@@ -12,5 +62,31 @@
                 <ng-template [ngIf]="!requestFlag && followFlag">
                     <button mat-stroked-button (click)="unfollow()">Unfollow {{info.username}}</button>
                 </ng-template>
+                <mat-expansion-panel>
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>
+                            Followers
+                        </mat-panel-title>
+                        <mat-panel-description>
+                            {{followers.length}}
+                        </mat-panel-description>
+                    </mat-expansion-panel-header>
+                    <mat-list>
+                        <mat-list-item *ngFor="let follower of followers">{{follower.username}}</mat-list-item>
+                    </mat-list>
+                </mat-expansion-panel>
+                <mat-expansion-panel>
+                    <mat-expansion-panel-header>
+                        <mat-panel-title>
+                            Following
+                        </mat-panel-title>
+                        <mat-panel-description>
+                            {{following.length}}
+                        </mat-panel-description>
+                    </mat-expansion-panel-header>
+                    <mat-list>
+                        <mat-list-item *ngFor="let thisFollowing of following">{{thisFollowing.username}}</mat-list-item>
+                    </mat-list>
+                </mat-expansion-panel>
     </ng-template>
 </div>
