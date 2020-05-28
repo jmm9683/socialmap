@@ -2,6 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { UserService } from '../services/user.service';
 import { AngularFireDatabase } from '@angular/fire/database'; 
 import * as firebase from 'firebase';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-account-settings',
@@ -20,13 +21,12 @@ export class AccountSettingsComponent implements OnInit {
   followFlag = false;
   isPrivate = true;
 
-
   constructor(private user: UserService, private db: AngularFireDatabase) { }
 
   ngOnInit() {
-    this.accountInfo = this.db.object(`users/${this.account}/`).valueChanges();
-    this.accountInfo.subscribe(info => {
-      this.isPrivate = info.private;
+    this.db.object(`users/${this.account}/`).valueChanges().subscribe(info => {
+      this.accountInfo = info;
+      this.isPrivate = info['private'];
     })
     this.db.object(`following/${this.account}/`).valueChanges().subscribe((following: object) => {
       let thisFollowing;

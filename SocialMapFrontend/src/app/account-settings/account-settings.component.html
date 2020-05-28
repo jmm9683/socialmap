@@ -1,4 +1,4 @@
-<div *ngIf="accountInfo | async as info">
+<div *ngIf="accountInfo as info else loading">
     <ng-template [ngIf]="thisAccount()">
         <span mat-line>Hey {{info.username}}!</span>
         <mat-expansion-panel>
@@ -90,3 +90,6 @@
                 </mat-expansion-panel>
     </ng-template>
 </div>
+<ng-template #loading>
+    Loading...
+</ng-template>

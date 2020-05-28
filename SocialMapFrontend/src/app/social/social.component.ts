@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { UserService } from '../services/user.service';
 import * as firebase from 'firebase';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-social',
@@ -11,6 +12,7 @@ export class SocialComponent implements OnInit {
 
   userSearch: string;
   userSearchResult: any;
+  searchObservable: Observable<any>;
 
   constructor(private user: UserService) { }
 
@@ -18,7 +20,7 @@ export class SocialComponent implements OnInit {
   }
 
   findUsernames() {
-  this.getUsernames(this.userSearch).then(snapshot => {this.setSearhcList(snapshot)})
+    this.getUsernames(this.userSearch).then(snapshot => {this.setSearhcList(snapshot)})
   }
 
   setSearhcList(snapshot){

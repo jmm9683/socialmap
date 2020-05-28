@@ -5,9 +5,10 @@
       <mat-icon>close</mat-icon>
     </button>
 </mat-form-field>
-<mat-expansion-panel *ngFor="let users of userSearchResult | keyvalue">
+  <mat-expansion-panel *ngFor="let users of userSearchResult | keyvalue">
     <mat-expansion-panel-header>
       {{userSearchResult[users.key].username}}
     </mat-expansion-panel-header>
     <app-account-settings [account]="users.key"></app-account-settings>
-</mat-expansion-panel>
+  </mat-expansion-panel>
+
