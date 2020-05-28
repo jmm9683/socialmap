@@ -18,8 +18,6 @@ export class UserLoginComponent {
 
   
   checkUsername() {
-    console.log(this.user.currentUser)
-    console.log(this.user.hasUsername)
     this.user.checkUsername(this.usernameText).valueChanges().subscribe(username => {
       this.usernameAvailable = (username == null)
     })

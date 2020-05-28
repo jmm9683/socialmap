@@ -12,7 +12,7 @@ export class UserService {
 
     currentUser = {
         uid: null,
-        username: null
+        username: "blank"
       }; 
     
     constructor(private afAuth: AngularFireAuth, private db: AngularFireDatabase){

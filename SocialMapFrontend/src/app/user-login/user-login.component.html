@@ -3,7 +3,7 @@
         <!-- <ngx-auth-firebaseui-providers layout="column" thene="outline" [providers]="[providers.Google]"></ngx-auth-firebaseui-providers> -->
     </div>
 
-<div style="text-align: center;">
+<div style="text-align: center;"  *ngIf="user.isLoggedIn && user.hasUsername">
     <button   type="button" class="button"
     *ngIf="user.isLoggedIn"
     (click)="logout()">
@@ -21,11 +21,11 @@
          (keyup)="checkUsername()">
 
   <p class="help is-success" *ngIf="usernameAvailable && usernameText">
-    @{{usernameText}} is available
+    @{{usernameText.toLowerCase()}} is available
   </p>
 
   <p class="help is-danger" *ngIf="!usernameAvailable && usernameText">
-    @{{usernameText}} has already been taken
+    @{{usernameText.toLowerCase()}} has already been taken
   </p>
 
   <button class="button is-primary"

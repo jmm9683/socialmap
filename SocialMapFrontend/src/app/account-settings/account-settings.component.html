@@ -1,1 +1,16 @@
-<p>account-settings works!</p>
+<div *ngIf="accountInfo | async as info">
+    <ng-template [ngIf]="thisAccount()">
+        <p>Hey {{info.username}}!</p>
+    </ng-template>
+    <ng-template [ngIf]="!thisAccount()">
+                <ng-template [ngIf]="!requestFlag && !followFlag">
+                    <button mat-stroked-button (click)="sendFollowRequst(info.private)">Follow {{info.username}}</button>
+                </ng-template>
+                <ng-template [ngIf]="requestFlag && !followFlag">
+                    <button mat-stroked-button (click)="cancelFollowRequst()">Cancel Follow Request to {{info.username}}</button>
+                </ng-template>
+                <ng-template [ngIf]="!requestFlag && followFlag">
+                    <button mat-stroked-button (click)="unfollow()">Unfollow {{info.username}}</button>
+                </ng-template>
+    </ng-template>
+</div>

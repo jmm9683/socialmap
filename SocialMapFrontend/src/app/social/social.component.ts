@@ -12,7 +12,7 @@ export class SocialComponent implements OnInit {
   userSearch: string;
   userSearchResult: any;
 
-  constructor() { }
+  constructor(private user: UserService) { }
 
   ngOnInit() {
   }
@@ -23,12 +23,15 @@ export class SocialComponent implements OnInit {
 
   setSearhcList(snapshot){
     this.userSearchResult = snapshot.val()
+    if(this.userSearchResult){
+      delete this.userSearchResult[this.user.currentUser.uid]
+    }
   }
 
   getUsernames(userSearch: string){
     userSearch = userSearch.toLowerCase();
     var ref = firebase.database().ref("/users");
-    return ref.orderByChild("username").startAt(userSearch).endAt(userSearch+'\uf8ff').once("value")
+    return ref.orderByChild("username").startAt(userSearch).endAt(userSearch+'\uf8ff').limitToFirst(10).once("value")
   }
     
 }
