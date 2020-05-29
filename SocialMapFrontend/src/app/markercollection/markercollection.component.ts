@@ -18,25 +18,18 @@ export class MarkercollectionComponent implements OnInit {
   markerForm: FormGroup;
   selectedCollections: Array<String>;
   markerCollection: object;
+  myMarkerCollection: object;
+  following: Array<any> = [];
 
   userData = {
     uid: null
   }; 
  
-  constructor(private data: DataService, private formBuilder: FormBuilder, public db: AngularFireDatabase, private afAuth: AngularFireAuth, public user: UserService ) {
-    this.afAuth.onAuthStateChanged((user) => {
-      this.userData = user;
-      if (this.userData){
-        this.markerCollection = db.list(`markerCollections/${this.userData["uid"]}/`).valueChanges();
-      }
-      else {
-        this.markerCollection = null;
-      }
-    });
-    
-  }
+  constructor(private data: DataService, private formBuilder: FormBuilder, public db: AngularFireDatabase, private afAuth: AngularFireAuth, public user: UserService ) {}
   
   ngOnInit() {
+    this.markerCollection = this.db.list(`markerCollections/${this.user.currentUser.uid}/`).valueChanges();
+    this.myMarkerCollection = this.db.list(`markerCollections/${this.user.currentUser.uid}/`).valueChanges();
     this.data.currentGeocoderObject.subscribe(geocoderObject => {this.geocoderObject = geocoderObject;
       this.markerForm = this.formBuilder.group({
         address: [this.geocoderObject["result"]["place_name"],Validators.compose([Validators.required])],
@@ -48,6 +41,14 @@ export class MarkercollectionComponent implements OnInit {
     });
     this.data.currentGeocoderFlag.subscribe(geocoderFlag => this.geocoderFlag = geocoderFlag);
     this.data.currentSelectedCollections.subscribe(selectedCollections => this.selectedCollections = selectedCollections);
+    this.db.object(`following/${this.user.currentUser.uid}`).valueChanges().subscribe((following : Object) => {
+      this.following = [{"uid": this.user.currentUser.uid, "username": this.user.currentUser.username}];
+      for (let thisFollowing in following){
+        this.db.object(`users/${thisFollowing}/`).valueChanges().subscribe(followingInfo => {
+          this.following.push({"uid": thisFollowing, "username": followingInfo['username']});
+        })
+      }
+    })
 
   }
 
@@ -78,6 +79,11 @@ export class MarkercollectionComponent implements OnInit {
     this.data.DisplayCollectionsOnMap(); 
   }
 
-
+  changeCollection(user){
+    this.markerCollection = this.db.list(`markerCollections/${user.value}/`).valueChanges();
+    this.selectedCollections = [];
+    this.data.changeSelectedCollections(this.selectedCollections);
+    this.data.DisplayCollectionsOnMap(); 
+  }
 
 }

@@ -26,6 +26,7 @@ export class MapComponent implements OnInit, AfterViewInit {
   style = 'mapbox://styles/jjaakee/ck5l9uadc29pu1ipb6l3xp5r5';
   lat = 30.2672;
   lng = -97.7431;
+  markerCount = 0;
 
   // markers saved here
   currentCollectionMarkers =  [];
@@ -93,49 +94,36 @@ export class MapComponent implements OnInit, AfterViewInit {
   } 
 
   DisplayCollectionsOnMap(){
-
-    this.db.list(`markerCollections/${this.userData["uid"]}/`).valueChanges().subscribe(snapshots => {
       this.clearMarkers("collection");
-      this.currentCollectionMarkers = [];
-
-      snapshots.forEach((snapshot: object) => {
-        let collectionName = snapshot["collectionName"];
-        if (this.selectedCollections.includes(collectionName)){
-          for (let i in snapshot){
-            if (i != "collectionName"){
-              this.currentCollectionMarkers.push(snapshot[i]);
-            }
+      this.currentCollectionMarkers = this.selectedCollections;
+      for (let i = 0; i < this.currentCollectionMarkers.length; i++){
+        for (var key in this.currentCollectionMarkers[i]) {
+          if (this.currentCollectionMarkers[i].hasOwnProperty(key) && this.currentCollectionMarkers[i][key].hasOwnProperty("geometry")) {
+              let id = 'collection' + this.markerCount
+              this.map.addLayer({
+                id: id,
+                type: 'symbol',
+                source: {
+                  type: 'geojson',
+                  data: {
+                    type: 'Feature',
+                    properties: {},
+                    geometry: {
+                      type: 'Point',
+                      coordinates: [this.currentCollectionMarkers[i][key]['geometry']['coordinates'][0], this.currentCollectionMarkers[i][key]['geometry']['coordinates'][1]]
+                    }
+                  }
+                },
+                layout: {
+                  'icon-image': 'embassy-15',
+                  'icon-padding': 0,
+                  'icon-allow-overlap': true
+                  }
+              });
+              this.markerCount++;
           }
         }
-      });
-
-      for (let i = 0; i < this.currentCollectionMarkers.length; i++){
-        console.log(this.currentCollectionMarkers.length);
-        console.log(this.currentCollectionMarkers[i]);
-        let id = 'collection' + i
-        this.map.addLayer({
-          id: id,
-          type: 'symbol',
-          source: {
-            type: 'geojson',
-            data: {
-              type: 'Feature',
-              properties: {},
-              geometry: {
-                type: 'Point',
-                coordinates: [this.currentCollectionMarkers[i]['geometry']['coordinates'][0], this.currentCollectionMarkers[i]['geometry']['coordinates'][1]]
-              }
-            }
-          },
-          layout: {
-            'icon-image': 'embassy-15',
-            'icon-padding': 0,
-            'icon-allow-overlap': true
-            }
-        });
       }
-
-    })
   }
 
   DisplayBroadcastsOnMap(){
@@ -170,13 +158,12 @@ export class MapComponent implements OnInit, AfterViewInit {
   clearMarkers(type){
     console.log(type)
     if (type == "collection"){
-      for (let i = 0; i < this.currentCollectionMarkers.length; i++){
-        console.log(this.currentCollectionMarkers);
+      for (let i = 0; i < this.markerCount; i++){
         let id = 'collection' + i;
         this.map.removeLayer(id);
         this.map.removeSource(id);
-        
       }
+      this.markerCount = 0;
     }
     else if (type == "broadcast"){
       for (let i = 0; i < this.currentBroadcastMarkers.length; i++){

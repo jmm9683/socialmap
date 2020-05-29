@@ -37,6 +37,7 @@ import { MatTableModule } from '@angular/material';
 import { MatSortModule } from '@angular/material';
 import { MatSliderModule } from '@angular/material/slider';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatBadgeModule } from '@angular/material/badge';
 import { SocialComponent } from './social/social.component';
 import { AccountSettingsComponent } from './account-settings/account-settings.component';
 
@@ -83,7 +84,8 @@ import { AccountSettingsComponent } from './account-settings/account-settings.co
     MatRadioModule,
     MatSortModule,
     MatSliderModule,
-    MatSlideToggleModule
+    MatSlideToggleModule,
+    MatBadgeModule
 
 
   ],

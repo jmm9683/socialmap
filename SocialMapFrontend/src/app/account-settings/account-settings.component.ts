@@ -20,6 +20,7 @@ export class AccountSettingsComponent implements OnInit {
   requestFlag = false;
   followFlag = false;
   isPrivate = true;
+  followRequestsCount = 0;
 
   constructor(private user: UserService, private db: AngularFireDatabase) { }
 
@@ -29,17 +30,15 @@ export class AccountSettingsComponent implements OnInit {
       this.isPrivate = info['private'];
     })
     this.db.object(`following/${this.account}/`).valueChanges().subscribe((following: object) => {
-      let thisFollowing;
       this.following = [];
-      for (thisFollowing in following){
+      for (let thisFollowing in following){
         this.db.object(`users/${thisFollowing}/`).valueChanges().subscribe(followingInfo => {
           this.following.push({"uid": thisFollowing, "username": followingInfo['username']});
         })
       }
     })
     this.db.object(`followers/${this.account}/`).valueChanges().subscribe((followers: object) => {
-      let follower;
-      for (follower in followers){
+      for (let follower in followers){
         if (follower == this.user.currentUser.uid){
           this.followFlag = true;
         }
@@ -49,9 +48,13 @@ export class AccountSettingsComponent implements OnInit {
         })
       }
     })
+    this.user.currentfollowRequestsCount.subscribe(followRequestsCount => this.followRequestsCount = followRequestsCount);
     this.db.object(`followRequests/${this.account}/`).valueChanges().subscribe((followRequests: object)=> {
-      let request;
-      for (request in followRequests){
+      for (let request in followRequests){
+        if(this.thisAccount()){
+          this.followRequestsCount++;
+          this.user.changeFollowRequestsCount(this.followRequestsCount);
+        }
         if (request == this.user.currentUser.uid){
           this.requestFlag = true;
         }
@@ -84,6 +87,8 @@ export class AccountSettingsComponent implements OnInit {
     else{
       let ref = firebase.database().ref(`followRequests/${cancelRequest}/${this.account}`);
       ref.remove()
+      this.followRequestsCount--;
+      this.user.changeFollowRequestsCount(this.followRequestsCount);
     }
     this.requestFlag = false; 
     this.followFlag = false;
@@ -135,6 +140,8 @@ export class AccountSettingsComponent implements OnInit {
       }
     }
     this.followRequests = newRequest;
+    this.followRequestsCount--;
+    this.user.changeFollowRequestsCount(this.followRequestsCount);
   }
   changePrivacy(){
     if(this.isPrivate){

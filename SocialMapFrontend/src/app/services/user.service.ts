@@ -2,9 +2,9 @@ import { Injectable } from '@angular/core';
 import { AngularFireDatabase } from '@angular/fire/database'; 
 import { AngularFireAuth } from '@angular/fire/auth';
 import * as firebase from 'firebase';
-
 import 'rxjs/add/operator/switchMap';
 import {switchMap} from 'rxjs/operators';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable()
 
@@ -15,6 +15,10 @@ export class UserService {
         username: "blank"
       }; 
     
+
+    private followRequestsCount = new BehaviorSubject<any>(0);
+    currentfollowRequestsCount = this.followRequestsCount.asObservable();
+
     constructor(private afAuth: AngularFireAuth, private db: AngularFireDatabase){
 
         this.afAuth.authState.pipe( switchMap (user => {
@@ -62,6 +66,10 @@ export class UserService {
           }).catch(function(error) {
             // An error happened.
           });
+    }
+
+    changeFollowRequestsCount(count){
+        this.followRequestsCount.next(count);
     }
 
 }

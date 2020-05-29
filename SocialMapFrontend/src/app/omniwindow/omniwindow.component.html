@@ -44,9 +44,10 @@
             </mat-tab>
             <mat-tab>
                 <ng-template mat-tab-label>
-                    <span class="material-icons">
-                        account_circle
-                    </span>                
+                    <!-- <span class="material-icons" matBadge="15" matBadgeColor="warn"> 
+                        
+                    </span>   -->
+                    <mat-icon [matBadge]="followRequestsCount" [matBadgeHidden]="followRequestsCount < 1" matBadgeColor="warn">account_circle</mat-icon>              
                 </ng-template>
                 <app-account-settings [account]="user.currentUser.uid"></app-account-settings>
                 <app-user-login></app-user-login>

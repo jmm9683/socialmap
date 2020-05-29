@@ -7,7 +7,7 @@
                 <mat-form-field>
                     <input type="text" matInput placeholder="Collection" formControlName="collection" [matAutocomplete]="auto">           
                     <mat-autocomplete #auto="matAutocomplete">
-                    <mat-option *ngFor="let collection of markerCollection | async" [value]="collection.collectionName">
+                    <mat-option *ngFor="let collection of myMarkerCollection | async" [value]="collection.collectionName">
                         {{collection.collectionName}}
                     </mat-option>
                     </mat-autocomplete>
@@ -40,13 +40,21 @@
 <br>
 <mat-card>
     <mat-card-content> 
+        <mat-form-field>
+            <mat-label>My Collections</mat-label>
+            <mat-select (selectionChange)="changeCollection($event)">
+              <mat-option *ngFor="let user of following" [value]="user.uid">
+                {{user.username}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
         <div *ngIf="markerCollection | async as collections">
             <ng-template [ngIf]="(collections | json) == ([] | json)">
                 <p style="text-align: center;">No Collections to Show.</p>
             </ng-template>
             <ng-template [ngIf]="(collections | json) != ([] | json)">
                 <mat-selection-list #collectionList [(ngModel)]="selectedCollections" (ngModelChange)="changeSelectedCollections()">
-                    <mat-list-option *ngFor="let name of collections" [value]="name.collectionName">
+                    <mat-list-option *ngFor="let name of collections" [value]="name">
                         {{name.collectionName}}
                     </mat-list-option>
                 </mat-selection-list>
