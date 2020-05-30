@@ -21,10 +21,6 @@ export class MarkercollectionComponent implements OnInit {
   myMarkerCollection: object;
   following: Array<any> = [];
 
-  userData = {
-    uid: null
-  }; 
- 
   constructor(private data: DataService, private formBuilder: FormBuilder, public db: AngularFireDatabase, private afAuth: AngularFireAuth, public user: UserService ) {}
   
   ngOnInit() {
@@ -68,9 +64,9 @@ export class MarkercollectionComponent implements OnInit {
         "coordinates": [[longitude], [lattitude]]
       }
     };
-    this.db.list(`markerCollections/${this.userData["uid"]}/${collection}`).push(newMarker);
-    this.db.list(`markerCollections/${this.userData["uid"]}/${collection}`).set("collectionName", collection);
-    this.db.list(`markerCollections/${this.userData["uid"]}/${collection}`).set("owner", this.user.currentUser.username)
+    this.db.list(`markerCollections/${this.user.currentUser.uid}/${collection}`).push(newMarker);
+    this.db.list(`markerCollections/${this.user.currentUser.uid}/${collection}`).set("collectionName", collection);
+    this.db.list(`markerCollections/${this.user.currentUser.uid}/${collection}`).set("owner", this.user.currentUser.username)
     this.data.changeGeocoderFlag(false);
   }
 

@@ -49,10 +49,6 @@ export class MarkerbroadcastComponent implements OnInit {
     this.dataSource.filter = filterValue.trim().toLowerCase();
   }
 
-  userData = {
-    uid: null
-  }; 
- 
   constructor(private data: DataService, private formBuilder: FormBuilder, public db: AngularFireDatabase, private afAuth: AngularFireAuth, public user: UserService ) {}
   
   ngOnInit() {
@@ -91,6 +87,7 @@ export class MarkerbroadcastComponent implements OnInit {
     const now = new Date();
     this.minDate = new Date();
     this.minDate.setDate(now.getDate());
+    
   
   }
 

@@ -5,7 +5,7 @@
         <ng-template [ngIf]="geocoderFlag">
             <form [formGroup]="markerForm">
                 <mat-form-field>
-                    <input type="text" matInput placeholder="Collection" formControlName="collection" [matAutocomplete]="auto">           
+                    <input type="text" pattern="^[a-zA-Z0-9_-]*$" matInput placeholder="Collection" formControlName="collection" [matAutocomplete]="auto">           
                     <mat-autocomplete #auto="matAutocomplete">
                     <mat-option *ngFor="let collection of myMarkerCollection | async" [value]="collection.collectionName">
                         {{collection.collectionName}}
