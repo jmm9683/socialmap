@@ -22,11 +22,20 @@ export class AccountSettingsComponent implements OnInit {
   isPrivate = true;
   followRequestsCount = 0;
 
-  constructor(private user: UserService, private db: AngularFireDatabase) { }
+  storageRef = firebase.storage().ref().child('profile_pictures/defaultprofile.png');
+
+  constructor(private user: UserService, private db: AngularFireDatabase) { 
+
+  }
 
   ngOnInit() {
     this.db.object(`users/${this.account}/`).valueChanges().subscribe(info => {
       this.accountInfo = info;
+      if(!info['propicURL']){
+        this.storageRef.getDownloadURL().then(url => {
+          this.accountInfo['propicURL'] = url;
+        });
+      }
       this.isPrivate = info['private'];
     })
     this.db.object(`following/${this.account}/`).valueChanges().subscribe((following: object) => {
@@ -152,5 +161,34 @@ export class AccountSettingsComponent implements OnInit {
       //make public
       this.db.list(`users/${this.account}`).set("private", true);
     }
+  }
+
+  selectedFile: File = null;
+
+  onFileSelected(event){
+    this.selectedFile = <File>event.target.files[0];
+    console.log(this.selectedFile);
+    this.uploadImage().then(() => {
+      firebase.storage().ref().child(`profile_pictures/${this.account}`).getDownloadURL().then(url => {
+        this.accountInfo['propicURL'] = url;
+        this.db.list(`users/${this.account}`).set("propicURL", url);
+      });
+    })
+    
+  }
+
+  uploadImage(){
+    let promise = new Promise((res,rej) => {
+      let uploadTask = firebase.storage().ref(`profile_pictures/${this.account}`).put(this.selectedFile);
+          uploadTask.on('state_changed', function(snapshot) {
+          }, function(error) {
+              rej(error);
+          }, function() {
+          var downloadURL = uploadTask.snapshot.downloadURL;
+              res(downloadURL);
+          });
+      });
+      return promise;
+
   }
 }

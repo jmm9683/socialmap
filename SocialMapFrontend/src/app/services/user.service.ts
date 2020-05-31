@@ -12,12 +12,15 @@ export class UserService {
 
     currentUser = {
         uid: null,
-        username: "blank"
+        username: "blank",
+        propicURL: null
       }; 
     
 
     private followRequestsCount = new BehaviorSubject<any>(0);
     currentfollowRequestsCount = this.followRequestsCount.asObservable();
+
+    storageRef = firebase.storage().ref().child('profile_pictures/defaultprofile.png');
 
     constructor(private afAuth: AngularFireAuth, private db: AngularFireDatabase){
 
@@ -33,6 +36,7 @@ export class UserService {
             
         })).subscribe(user => {
             this.currentUser['username'] = user['username']
+            this.currentUser['propicURL'] = user['propicURL'];
         })
 
     }

@@ -120,7 +120,7 @@ export class MarkerbroadcastComponent implements OnInit {
 
 
   changeSelectedBroadcasts(){
-    this.selectedBroadcasts = this.selection.selected;
+    this.selectedBroadcasts = this.dataSource.connect().value;
     this.data.changeSelectedBroadcasts(this.selectedBroadcasts);
     this.data.DisplayBroadcastsOnMap(); 
   }

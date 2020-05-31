@@ -58,7 +58,7 @@
                 </mat-selection-list> -->
                 <mat-form-field>
                     <mat-label>Filter</mat-label>
-                    <input matInput (keyup)="applyFilter($event)" placeholder="Ex. ium">
+                    <input matInput (keyup)="applyFilter($event); changeSelectedBroadcasts();" placeholder="Ex. ium">
                 </mat-form-field> 
                 <!-- <button mat-stroked-button (click)=" clearSelectedBroadcasts()">Clear Broadcasts</button>                  -->
                 <mat-table #table [dataSource]="dataSource">
