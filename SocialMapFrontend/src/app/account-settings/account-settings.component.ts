@@ -172,6 +172,21 @@ export class AccountSettingsComponent implements OnInit {
       firebase.storage().ref().child(`profile_pictures/${this.account}`).getDownloadURL().then(url => {
         this.accountInfo['propicURL'] = url;
         this.db.list(`users/${this.account}`).set("propicURL", url);
+        firebase.database().ref('/markerCollections').child(`${this.account}`).on('value', function(snapshot) {
+          snapshot.forEach(function(child) {
+            child.ref.update({
+              markerLogo: url
+            });
+          });
+        });
+        firebase.database().ref('/markerBroadcasts').child(`${this.account}`).on('value', function(snapshot) {
+          snapshot.forEach(function(child) {
+            child.ref.update({
+              markerLogo: url
+            });
+          });
+        });
+        
       });
     })
     

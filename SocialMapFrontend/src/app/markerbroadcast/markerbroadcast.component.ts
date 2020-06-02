@@ -30,7 +30,7 @@ export class MarkerbroadcastComponent implements OnInit {
   following: Array<any> = [];
   minDate
 
-  displayedColumns = ['select', 'time', 'owner', 'name', 'description'];
+  displayedColumns = ['select', 'time', 'owner', 'title', 'description'];
   dataSource
   selection = new SelectionModel<Broadcast>(true, []);
   isAllSelected() {
@@ -60,12 +60,11 @@ export class MarkerbroadcastComponent implements OnInit {
     })
     this.data.currentGeocoderObject.subscribe(geocoderObject => {this.geocoderObject = geocoderObject;
       this.markerForm = this.formBuilder.group({
-        address: [this.geocoderObject["result"]["place_name"],Validators.compose([Validators.required])],
+        title: [this.geocoderObject["result"]["text"],Validators.compose([Validators.required])],
         longitude: [this.geocoderObject["result"]["center"][0],Validators.compose([Validators.required])],
         lattitude: [this.geocoderObject["result"]["center"][1],Validators.compose([Validators.required])],
         description: ['',Validators.compose([Validators.required])],
-        time: ['',Validators.compose([Validators.required])],
-        name: ['',Validators.compose([Validators.required])]
+        time: ['',Validators.compose([Validators.required])]
       })
     });
     this.db.object(`following/${this.user.currentUser.uid}`).valueChanges().subscribe((following : Object) => {
@@ -97,21 +96,18 @@ export class MarkerbroadcastComponent implements OnInit {
       return;
     }
     
-    let name = this.markerForm.controls['name'].value;
+    let title = this.markerForm.controls['title'].value;
     let description = this.markerForm.controls['description'].value;
     let time = this.markerForm.controls['time'].value;
     let longitude = this.markerForm.controls['longitude'].value;
     let lattitude = this.markerForm.controls['lattitude'].value;
     let newMarker = {
       "owner": this.user.currentUser.username,
-      "broadcastName": name,
+      "broadcastName": title,
       "description": description,
       "time": time.getTime(),
-      "type": 'Feature',
-      "geometry": {
-        "type": 'Point',
-        "coordinates": [[longitude], [lattitude]]
-      }
+      "coordinates": [[longitude], [lattitude]],
+      "markerLogo": this.user.currentUser.propicURL
     };
 
     this.db.list(`markerBroadcasts/${this.user.currentUser.uid}/`).push(newMarker);

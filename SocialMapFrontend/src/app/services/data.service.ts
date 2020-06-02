@@ -33,6 +33,13 @@ export class DataService {
     changeGeocoderObject(geocoder: object){
         this.geocoderObject.next(geocoder);
     }
+
+    changeGeocoderObjectLngLat(lnglat: object){
+        console.log(lnglat["lng"])
+        console.log(lnglat["lat"])
+        let center = [lnglat["lng"], lnglat["lat"]]
+        this.geocoderObject.next({...this.geocoderObject.value, "result": {...this.geocoderObject.value["result"], "center": center}})
+    }
     
     changeSelectedCollections(name: Array<String>){
         this.selectedCollections.next(name);

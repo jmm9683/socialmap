@@ -14,18 +14,18 @@
                 </mat-form-field>
                 <br>
                 <mat-form-field>
-                    <input matInput placeholder="address" formControlName="address">
+                    <input matInput placeholder="Title" formControlName="title">
                 </mat-form-field>
                 <br>
                 <mat-form-field>
-                    <input matInput placeholder="Description" formControlName="description">
+                    <textarea matInput placeholder="Description"  formControlName="description"></textarea>
                 </mat-form-field>
-                <!-- <mat-form-field>
+                <mat-form-field>
                     <input matInput placeholder="Longitude" formControlName="longitude">
                 </mat-form-field>
                 <mat-form-field>
                     <input matInput placeholder="Lattitude" formControlName="lattitude">
-                </mat-form-field> -->
+                </mat-form-field>
                 <mat-card-actions>
                     <button [disabled]="!markerForm.valid" (click)="addMarker()" mat-button color="primary">Save to Collection</button>
                 </mat-card-actions>

@@ -37,6 +37,13 @@ export class UserService {
         })).subscribe(user => {
             this.currentUser['username'] = user['username']
             this.currentUser['propicURL'] = user['propicURL'];
+            if(!user['propicURL']){
+                this.storageRef.getDownloadURL().then(url => {
+                    this.db.object(`/users/${this.currentUser.uid}`).update({"propicURL": url})
+                    this.currentUser['propicURL'] = url;
+                });
+                
+            }
         })
 
     }

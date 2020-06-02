@@ -4,9 +4,9 @@
     <mat-card-content>
         <ng-template [ngIf]="geocoderFlag">
             <form [formGroup]="markerForm">
-                <mat-form-field>
+                <!-- <mat-form-field>
                     <input matInput placeholder="Name" formControlName="name">
-                </mat-form-field>
+                </mat-form-field> -->
                 <br>
                 <mat-form-field>
                     <input matInput [ngxMatDatetimePicker]="picker" placeholder="Choose a date" formControlName="time"
@@ -20,18 +20,18 @@
                 </mat-form-field>
                 <br>
                 <mat-form-field>
-                    <input matInput placeholder="Address" formControlName="address">
+                    <input matInput placeholder="Title" formControlName="title">
                 </mat-form-field>
                 <br>
                 <mat-form-field>
-                    <input matInput placeholder="Description" formControlName="description">
+                    <textarea matInput placeholder="Description"  formControlName="description"></textarea>
                 </mat-form-field>
-                <!-- <mat-form-field>
+                <mat-form-field>
                     <input matInput placeholder="Longitude" formControlName="longitude">
                 </mat-form-field>
                 <mat-form-field>
                     <input matInput placeholder="Lattitude" formControlName="lattitude">
-                </mat-form-field> -->
+                </mat-form-field>
                 <mat-card-actions>
                     <button [disabled]="!markerForm.valid" (click)="addMarker()" mat-button color="primary">Publish Broadcast</button>
                 </mat-card-actions>
@@ -79,8 +79,8 @@
                         </mat-cell>
                     </ng-container>
 
-                    <ng-container matColumnDef="name">
-                      <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
+                    <ng-container matColumnDef="title">
+                      <mat-header-cell *matHeaderCellDef> Title </mat-header-cell>
                       <mat-cell *matCellDef="let element"> {{element.broadcastName}} </mat-cell>
                     </ng-container>
 

@@ -28,10 +28,10 @@ export class MarkercollectionComponent implements OnInit {
     this.myMarkerCollection = this.db.list(`markerCollections/${this.user.currentUser.uid}/`).valueChanges();
     this.data.currentGeocoderObject.subscribe(geocoderObject => {this.geocoderObject = geocoderObject;
       this.markerForm = this.formBuilder.group({
-        address: [this.geocoderObject["result"]["place_name"],Validators.compose([Validators.required])],
+        title: [this.geocoderObject["result"]["text"],Validators.compose([Validators.required])],
         longitude: [this.geocoderObject["result"]["center"][0],Validators.compose([Validators.required])],
         lattitude: [this.geocoderObject["result"]["center"][1],Validators.compose([Validators.required])],
-        description: [this.geocoderObject["result"]["text"],Validators.compose([Validators.required])],
+        description: ['',Validators.compose([Validators.required])],
         collection: ['',Validators.compose([Validators.required])]
       })
     });
@@ -57,14 +57,15 @@ export class MarkercollectionComponent implements OnInit {
     let collection = this.markerForm.controls['collection'].value;
     let longitude = this.markerForm.controls['longitude'].value;
     let lattitude = this.markerForm.controls['lattitude'].value;
+    let title = this.markerForm.controls['title'].value;
+    let description = this.markerForm.controls['description'].value;
     let newMarker = {
-      "type": 'Feature',
-      "geometry": {
-        "type": 'Point',
-        "coordinates": [[longitude], [lattitude]]
-      }
+      "title": title,
+      "description": description,
+      "coordinates": [[longitude], [lattitude]]
     };
     this.db.list(`markerCollections/${this.user.currentUser.uid}/${collection}`).push(newMarker);
+    this.db.list(`markerCollections/${this.user.currentUser.uid}/${collection}`).set("markerLogo", this.user.currentUser.propicURL);
     this.db.list(`markerCollections/${this.user.currentUser.uid}/${collection}`).set("collectionName", collection);
     this.db.list(`markerCollections/${this.user.currentUser.uid}/${collection}`).set("owner", this.user.currentUser.username)
     this.data.changeGeocoderFlag(false);

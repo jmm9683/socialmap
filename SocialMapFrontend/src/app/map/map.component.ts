@@ -63,7 +63,8 @@ export class MapComponent implements OnInit, AfterViewInit {
     this.geocoder = new MapboxGeocoder({
       accessToken: mapboxgl.accessToken,
       marker: {
-      color: 'orange'
+      color: 'orange',
+      draggable: true
       },
       mapboxgl: mapboxgl
     })
@@ -83,44 +84,58 @@ export class MapComponent implements OnInit, AfterViewInit {
     } 
     this.currentCollectionMarkers = []; 
     this.currentBroadcastMarkers = [];
-  }
 
+  }  
   
+
   ngAfterViewInit(){
       this.geocoder.on('result', (e: object) => {
+        console.log(e)
         this.data.changeGeocoderObject(e);
         this.data.changeGeocoderFlag(true);
+        
+    this.geocoder.mapMarker.on('dragend', (e) => {
+      this.data.changeGeocoderObjectLngLat(e.target.getLngLat());
+      this.data.changeGeocoderFlag(true); 
+    });
       });
   } 
 
   DisplayCollectionsOnMap(){
-      this.clearMarkers("collection");
-      this.currentCollectionMarkers = this.selectedCollections;
-      for (let i = 0; i < this.currentCollectionMarkers.length; i++){
-        for (var key in this.currentCollectionMarkers[i]) {
-          if (this.currentCollectionMarkers[i].hasOwnProperty(key) && this.currentCollectionMarkers[i][key].hasOwnProperty("geometry")) {
-              let id = 'collection' + this.markerCount
-              this.map.addLayer({
-                id: id,
-                type: 'symbol',
-                source: {
-                  type: 'geojson',
-                  data: {
-                    type: 'Feature',
-                    properties: {},
-                    geometry: {
-                      type: 'Point',
-                      coordinates: [this.currentCollectionMarkers[i][key]['geometry']['coordinates'][0], this.currentCollectionMarkers[i][key]['geometry']['coordinates'][1]]
-                    }
-                  }
-                },
-                layout: {
-                  'icon-image': 'embassy-15',
-                  'icon-padding': 0,
-                  'icon-allow-overlap': true
-                  }
-              });
-              this.markerCount++;
+      // remove markers 
+      if (this.currentCollectionMarkers!==null) {
+        for (var i = this.currentCollectionMarkers.length - 1; i >= 0; i--) {
+          this.currentCollectionMarkers[i].remove();
+        }
+      }
+      this.currentCollectionMarkers = [];
+      for (let i = 0; i < this.selectedCollections.length; i++){
+        for (var key in this.selectedCollections[i]) {
+          console.log(this.selectedCollections[i][key])
+          if (this.selectedCollections[i].hasOwnProperty(key) && this.selectedCollections[i][key].hasOwnProperty("coordinates")) {
+              // create a HTML element for each feature
+              var el = document.createElement('div');
+              el.id = 'marker';
+              el.className = key;
+              el.style.backgroundImage = 'url(' + this.selectedCollections[i]["markerLogo"] + ')';
+              el.style.backgroundSize = "cover";
+              el.style.width = "30px";
+              el.style.height = "30px";
+              el.style.borderRadius = "50%";
+              el.style.cursor = "pointer";
+              
+              // make a marker for each feature and add to the map
+              let coordinates = [this.selectedCollections[i][key]['coordinates'][0].value, this.selectedCollections[i][key]['coordinates'][1].value]
+              let thisMarker = new mapboxgl.Marker(el)
+                .setLngLat([this.selectedCollections[i][key]['coordinates'][0], this.selectedCollections[i][key]['coordinates'][1]])
+                .setPopup(new mapboxgl.Popup({ offset: 25 })
+                .setHTML('<h3>' + this.selectedCollections[i][key]['title'] + '</h3><p>' + this.selectedCollections[i][key]['description'] + '</p>'))
+                .addTo(this.map);
+
+                                
+              this.currentCollectionMarkers.push(thisMarker);
+              console.log(thisMarker)
+              console.log(el.style)
           }
         }
       }
@@ -142,7 +157,7 @@ export class MapComponent implements OnInit, AfterViewInit {
               properties: {},
               geometry: {
                 type: 'Point',
-                coordinates: [this.selectedBroadcasts[i]['geometry']['coordinates'][0], this.selectedBroadcasts[i]['geometry']['coordinates'][1]]
+                coordinates: [this.selectedBroadcasts[i]['coordinates'][0], this.selectedBroadcasts[i]['coordinates'][1]]
               }
             }
           },
@@ -177,4 +192,3 @@ export class MapComponent implements OnInit, AfterViewInit {
 
   }
 }
-	  
