@@ -115,10 +115,10 @@ export class MapComponent implements OnInit, AfterViewInit {
           if (this.selectedCollections[i].hasOwnProperty(key) && this.selectedCollections[i][key].hasOwnProperty("coordinates")) {
               // create a HTML element for each feature
               var el = document.createElement('div');
-              el.id = 'marker';
               el.className = key;
               el.style.backgroundImage = 'url(' + this.selectedCollections[i]["markerLogo"] + ')';
               el.style.backgroundSize = "cover";
+              el.style.backgroundPosition = "center center";
               el.style.width = "30px";
               el.style.height = "30px";
               el.style.borderRadius = "50%";
