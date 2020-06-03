@@ -8,6 +8,7 @@ import { Observable } from 'rxjs';
 import { MatTableDataSource } from '@angular/material';
 import { SelectionModel } from '@angular/cdk/collections';
 import { MatSort } from '@angular/material/sort';
+import * as firebase from 'firebase';
 
 export interface Broadcast {
   broadcastName: string;
@@ -25,10 +26,14 @@ export class MarkerbroadcastComponent implements OnInit {
   geocoderObject: object;
   geocoderFlag: boolean;
   markerForm: FormGroup;
-  selectedBroadcasts: Array<any>;
   markerBroadcasts: Array<any> = [];
+  myBroadcasts:  Array<any> = [];
+  followingBroadcasts: Array<any> = [];
+  publicBroadcasts: Array<any> = [];
   following: Array<any> = [];
   minDate
+  isPublic = false;
+  
 
   displayedColumns = ['select', 'time', 'owner', 'title', 'description'];
   dataSource
@@ -53,10 +58,9 @@ export class MarkerbroadcastComponent implements OnInit {
   
   ngOnInit() {
     this.db.list(`markerBroadcasts/${this.user.currentUser.uid}/`).valueChanges().subscribe( data => {
-      for (let i in data){
-        this.markerBroadcasts.push(data[i]);
-      }
-      this.dataSource = new MatTableDataSource<Broadcast>(this.markerBroadcasts);
+      this.myBroadcasts = data;
+      console.log(this.myBroadcasts)
+      this.displayMyBroadcasts();
     })
     this.data.currentGeocoderObject.subscribe(geocoderObject => {this.geocoderObject = geocoderObject;
       this.markerForm = this.formBuilder.group({
@@ -68,21 +72,31 @@ export class MarkerbroadcastComponent implements OnInit {
       })
     });
     this.db.object(`following/${this.user.currentUser.uid}`).valueChanges().subscribe((following : Object) => {
+      this.followingBroadcasts = []
       this.following = [{"uid": this.user.currentUser.uid, "username": this.user.currentUser.username}];
       for (let thisFollowing in following){
         this.db.list(`markerBroadcasts/${thisFollowing}/`).valueChanges().subscribe( data => {
-          for (let i in data){
-            this.markerBroadcasts.push(data[i]);
+          for(let i in data){
+            this.followingBroadcasts.push(data[i]);
           }
-          this.dataSource = new MatTableDataSource<Broadcast>(this.markerBroadcasts);
+          this.displayFollowingBroadcasts();
         })
         this.db.object(`users/${thisFollowing}/`).valueChanges().subscribe(followingInfo => {
           this.following.push({"uid": thisFollowing, "username": followingInfo['username']});
         })
       }
     })
-    this.data.currentGeocoderFlag.subscribe(geocoderFlag => this.geocoderFlag = geocoderFlag);
-    this.data.currentSelectedBroadcasts.subscribe(selectedBroadcasts => this.selectedBroadcasts = selectedBroadcasts);
+    this.db.list(`publicBroadcasts/`).valueChanges().subscribe( data => {
+      for(let user in data){
+        let userBroadcasts = []
+        userBroadcasts.push(data[user])
+        for(let marker in userBroadcasts[0]){
+          this.publicBroadcasts.push(userBroadcasts[0][marker]);
+        }
+      }
+      this.displayPublicBroadcasts();
+    })
+    this.data.currentGeocoderFlag.subscribe(geocoderFlag => this.geocoderFlag = geocoderFlag)
     const now = new Date();
     this.minDate = new Date();
     this.minDate.setDate(now.getDate());
@@ -107,34 +121,66 @@ export class MarkerbroadcastComponent implements OnInit {
       "description": description,
       "time": time.getTime(),
       "coordinates": [[longitude], [lattitude]],
-      "markerLogo": this.user.currentUser.propicURL
+      "markerLogo": this.user.currentUser.propicURL,
+      "public": this.isPublic
     };
 
-    this.db.list(`markerBroadcasts/${this.user.currentUser.uid}/`).push(newMarker);
+    this.db.list(`markerBroadcasts/${this.user.currentUser.uid}/`).push(newMarker).then((snap) => {
+      let key = snap.key; 
+      if(this.isPublic){
+        this.db.list(`publicBroadcasts/${this.user.currentUser.uid}/`).set(key, newMarker)
+      }
+      this.isPublic = false;
+   })
+    
     this.data.changeGeocoderFlag(false);
   }
 
-
-  changeSelectedBroadcasts(){
-    this.selectedBroadcasts = this.dataSource.connect().value;
-    this.data.changeSelectedBroadcasts(this.selectedBroadcasts);
-    this.data.DisplayBroadcastsOnMap(); 
+  displayMyBroadcasts(){
+    this.data.changeMyBroadcasts(this.myBroadcasts);
+    this.data.DisplayMyBroadcastsOnMap(); 
   }
 
-  // clearSelectedBroadcasts(){
-  //   this.selectedBroadcasts = [];
-  //   this.data.changeSelectedBroadcasts(this.selectedBroadcasts);
-  //   this.data.DisplayBroadcastsOnMap(); 
-  // }
-
-
-  // showBroadcast(broadcast){
-  //   console.log(broadcast)
-  //   this.selectedBroadcasts.push(broadcast)
-  //   console.log(this.selectedBroadcasts)
-  //   this.data.changeSelectedBroadcasts(this.selectedBroadcasts);
-  //   this.data.DisplayBroadcastsOnMap(); 
-  // }
+  displayFollowingBroadcasts(){
+    this.data.changeFollowingBroadcasts(this.followingBroadcasts);
+    this.data.DisplayFollowingBroadcastsOnMap(); 
+  }
+  displayPublicBroadcasts(){
+    this.data.changePublicBroadcasts(this.publicBroadcasts);
+    this.data.DisplayPublicBroadcastsOnMap(); 
+  }
+  displayMyFlag = true;
+  displayFollowingFlag = true;
+  displayPublicFlag = true;
+  hideBroadcasts(type){
+    if(type == 0){
+      if(!this.displayMyFlag){
+        this.displayMyBroadcasts();
+      }
+      else{
+        this.data.changeMyBroadcasts([]);
+        this.data.DisplayMyBroadcastsOnMap(); 
+      }
+    }
+    if(type == 1){
+      if(!this.displayFollowingFlag){
+        this.displayFollowingBroadcasts();
+      }
+      else{
+        this.data.changeFollowingBroadcasts([]);
+        this.data.DisplayFollowingBroadcastsOnMap(); 
+      }
+    }
+    if(type == 2){
+      if(!this.displayPublicFlag){
+        this.displayPublicBroadcasts();
+      }
+      else{
+        this.data.changePublicBroadcasts([]);
+        this.data.DisplayPublicBroadcastsOnMap(); 
+      }
+    }
+  }
 
 
 

@@ -64,6 +64,7 @@ export class MarkercollectionComponent implements OnInit {
       "description": description,
       "coordinates": [[longitude], [lattitude]]
     };
+    
     this.db.list(`markerCollections/${this.user.currentUser.uid}/${collection}`).push(newMarker);
     this.db.list(`markerCollections/${this.user.currentUser.uid}/${collection}`).set("markerLogo", this.user.currentUser.propicURL);
     this.db.list(`markerCollections/${this.user.currentUser.uid}/${collection}`).set("collectionName", collection);

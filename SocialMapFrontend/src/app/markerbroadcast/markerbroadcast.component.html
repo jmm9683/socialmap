@@ -4,9 +4,11 @@
     <mat-card-content>
         <ng-template [ngIf]="geocoderFlag">
             <form [formGroup]="markerForm">
-                <!-- <mat-form-field>
-                    <input matInput placeholder="Name" formControlName="name">
-                </mat-form-field> -->
+                <mat-form-field floatLabel="always" appearance="none">
+                    <mat-label>Public Broadcast</mat-label>
+                    <mat-slide-toggle  [(ngModel)]="isPublic" [ngModelOptions]="{standalone: true}"></mat-slide-toggle>
+                    <textarea matInput hidden></textarea>
+                </mat-form-field>
                 <br>
                 <mat-form-field>
                     <input matInput [ngxMatDatetimePicker]="picker" placeholder="Choose a date" formControlName="time"
@@ -26,6 +28,7 @@
                 <mat-form-field>
                     <textarea matInput placeholder="Description"  formControlName="description"></textarea>
                 </mat-form-field>
+                <br>
                 <mat-form-field>
                     <input matInput placeholder="Longitude" formControlName="longitude">
                 </mat-form-field>
@@ -47,9 +50,17 @@
 <mat-card>
     <mat-card-content> 
         <div *ngIf="markerBroadcasts as broadcasts">
-            <ng-template [ngIf]="(broadcasts | json) == ([] | json)">
+            <mat-label>Show My Broadcasts</mat-label>
+            <mat-slide-toggle  [(ngModel)]="displayMyFlag" (click)="hideBroadcasts(0)"></mat-slide-toggle>
+            <br>
+            <mat-label>Show Following Broadcast</mat-label>
+            <mat-slide-toggle [(ngModel)]="displayFollowingFlag" (click)="hideBroadcasts(1)"></mat-slide-toggle>
+            <br>
+            <mat-label>Show Public Broadcast</mat-label>
+            <mat-slide-toggle [(ngModel)]="displayPublicFlag" (click)="hideBroadcasts(2)"></mat-slide-toggle>
+            <!-- <ng-template [ngIf]="(broadcasts | json) == ([] | json)">
                 <p style="text-align: center;">No Broadcasts to Show.</p>
-            </ng-template>
+            </ng-template> -->
             <ng-template [ngIf]="(broadcasts | json) != ([] | json)">
                 <!-- <mat-selection-list #collectionList [(ngModel)]="selectedBroadcasts" (ngModelChange)="changeSelectedBroadcasts()">
                     <mat-list-option *ngFor="let name of broadcasts" [value]="name.broadcastName">
@@ -58,7 +69,7 @@
                 </mat-selection-list> -->
                 <mat-form-field>
                     <mat-label>Filter</mat-label>
-                    <input matInput (keyup)="applyFilter($event); changeSelectedBroadcasts();" placeholder="Ex. ium">
+                    <input matInput (keyup)="applyFilter($event);" placeholder="Ex. ium">
                 </mat-form-field> 
                 <!-- <button mat-stroked-button (click)=" clearSelectedBroadcasts()">Clear Broadcasts</button>                  -->
                 <mat-table #table [dataSource]="dataSource">

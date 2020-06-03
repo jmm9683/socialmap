@@ -21,8 +21,12 @@ export class DataService {
     private selectedCollections = new BehaviorSubject<Array<String>>([]);
     currentSelectedCollections = this.selectedCollections.asObservable();
     
-    private selectedBroadcasts = new BehaviorSubject<Array<String>>([]);
-    currentSelectedBroadcasts = this.selectedBroadcasts.asObservable();
+    private myBroadcasts = new BehaviorSubject<Array<String>>([]);
+    currentMyBroadcasts = this.myBroadcasts.asObservable();
+    private followingBroadcasts = new BehaviorSubject<Array<String>>([]);
+    currentFollowingBroadcasts = this.followingBroadcasts.asObservable();
+    private publicBroadcasts = new BehaviorSubject<Array<String>>([]);
+    currentPublicBroadcasts = this.publicBroadcasts.asObservable();
 
     constructor() {}
 
@@ -41,13 +45,20 @@ export class DataService {
         this.geocoderObject.next({...this.geocoderObject.value, "result": {...this.geocoderObject.value["result"], "center": center}})
     }
     
-    changeSelectedCollections(name: Array<String>){
-        this.selectedCollections.next(name);
+    changeSelectedCollections(collection: Array<String>){
+        this.selectedCollections.next(collection);
     }
 
-    changeSelectedBroadcasts(name: Array<any>){
-        this.selectedBroadcasts.next(name);
+    changeMyBroadcasts(broadcast: Array<any>){
+        this.myBroadcasts.next(broadcast);
     }
+    changeFollowingBroadcasts(broadcast: Array<any>){
+        this.followingBroadcasts.next(broadcast);
+    }
+    changePublicBroadcasts(broadcast: Array<any>){
+        this.publicBroadcasts.next(broadcast);
+    }
+    
 
     invokeDisplayCollections = new EventEmitter();    
     displayCollectionSub: Subscription;
@@ -56,11 +67,23 @@ export class DataService {
         this.invokeDisplayCollections.emit();    
       }
 
-    invokeDisplayBroadcasts = new EventEmitter();    
-    displayBroadcastSub: Subscription;
+    invokeDisplayMyBroadcasts = new EventEmitter();    
+    displayMyBroadcastSub: Subscription;
 
-    DisplayBroadcastsOnMap(){
-        this.invokeDisplayBroadcasts.emit();
+    DisplayMyBroadcastsOnMap(){
+        this.invokeDisplayMyBroadcasts.emit();
+    }
+    invokeDisplayFollowingBroadcasts = new EventEmitter();    
+    displayFollowingBroadcastSub: Subscription;
+
+    DisplayFollowingBroadcastsOnMap(){
+        this.invokeDisplayFollowingBroadcasts.emit();
+    }
+    invokeDisplayPublicBroadcasts = new EventEmitter();    
+    displayPublicBroadcastSub: Subscription;
+
+    DisplayPublicBroadcastsOnMap(){
+        this.invokeDisplayPublicBroadcasts.emit();
     }
 
     private handleError(error){

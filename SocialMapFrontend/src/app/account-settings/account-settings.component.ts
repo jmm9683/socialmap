@@ -186,6 +186,13 @@ export class AccountSettingsComponent implements OnInit {
             });
           });
         });
+        firebase.database().ref('/publicBroadcasts').child(`${this.account}`).on('value', function(snapshot) {
+          snapshot.forEach(function(child) {
+            child.ref.update({
+              markerLogo: url
+            });
+          });
+        });
         
       });
     })

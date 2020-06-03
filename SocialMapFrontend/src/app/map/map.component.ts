@@ -22,7 +22,9 @@ export class MapComponent implements OnInit, AfterViewInit {
   geocoderObject: object;
   geocoderFlag: boolean;
   selectedCollections: Array<String>;
-  selectedBroadcasts: Array<any>;
+  myBroadcasts: Array<any>;
+  followingBroadcasts: Array<any>;
+  publicBroadcasts: Array<any>;
   style = 'mapbox://styles/jjaakee/ck5l9uadc29pu1ipb6l3xp5r5';
   lat = 30.2672;
   lng = -97.7431;
@@ -30,7 +32,9 @@ export class MapComponent implements OnInit, AfterViewInit {
 
   // markers saved here
   currentCollectionMarkers =  [];
-  currentBroadcastMarkers = [];
+  currentMyBroadcastMarkers = [];
+  currentFollowingBroadcastMarkers = [];
+  currentPublicBroadcastMarkers = [];
 
   userData = {
     uid: null
@@ -40,8 +44,11 @@ export class MapComponent implements OnInit, AfterViewInit {
     this.afAuth.onAuthStateChanged((user) => {
       this.userData = user;
       if (this.userData == null){
-        this.clearMarkers("collection");
-        this.clearMarkers("broadcast");
+        this.clearMarkers("collection", 0);
+        this.clearMarkers("broadcast", 0);
+        this.clearMarkers("broadcast", 1);
+        this.clearMarkers("broadcast", 2);
+        
       }
     });
   }
@@ -50,8 +57,9 @@ export class MapComponent implements OnInit, AfterViewInit {
     this.data.currentGeocoderObject.subscribe(geocoderObject => this.geocoderObject = geocoderObject);
     this.data.currentGeocoderFlag.subscribe(geocoderFlag => this.geocoderFlag = geocoderFlag);
     this.data.currentSelectedCollections.subscribe(selectedCollections => this.selectedCollections = selectedCollections);
-    this.data.currentSelectedBroadcasts.subscribe(selectedBroadcasts => this.selectedBroadcasts = selectedBroadcasts);
-
+    this.data.currentMyBroadcasts.subscribe(myBroadcasts => this.myBroadcasts = myBroadcasts);
+    this.data.currentFollowingBroadcasts.subscribe(followingBroadcasts => this.followingBroadcasts = followingBroadcasts);
+    this.data.currentPublicBroadcasts.subscribe(publicBroadcasts => this.publicBroadcasts = publicBroadcasts);
 
     Object.getOwnPropertyDescriptor(mapboxgl, "accessToken").set(environment.mapbox.accessToken);
       this.map = new mapboxgl.Map({
@@ -77,20 +85,32 @@ export class MapComponent implements OnInit, AfterViewInit {
         this.DisplayCollectionsOnMap();    
       });    
     }   
-    if (this.data.displayBroadcastSub==undefined) {    
-      this.data.displayBroadcastSub = this.data.invokeDisplayBroadcasts.subscribe((name:string) => {    
-        this.DisplayBroadcastsOnMap();    
+    if (this.data.displayMyBroadcastSub==undefined) {    
+      this.data.displayMyBroadcastSub = this.data.invokeDisplayMyBroadcasts.subscribe((name:string) => {    
+        this.DisplayBroadcastsOnMap(0, this.myBroadcasts);    
       });    
     } 
+    if (this.data.displayFollowingBroadcastSub==undefined) {    
+      this.data.displayFollowingBroadcastSub = this.data.invokeDisplayFollowingBroadcasts.subscribe((name:string) => {    
+        this.DisplayBroadcastsOnMap(1, this.followingBroadcasts);    
+      });    
+    }
+    if (this.data.displayPublicBroadcastSub==undefined) {    
+      this.data.displayPublicBroadcastSub = this.data.invokeDisplayPublicBroadcasts.subscribe((name:string) => {    
+        this.DisplayBroadcastsOnMap(2, this.publicBroadcasts);    
+      });    
+    }
+     
     this.currentCollectionMarkers = []; 
-    this.currentBroadcastMarkers = [];
+    this.currentMyBroadcastMarkers = [];
+    this.currentFollowingBroadcastMarkers = [];
+    this.currentPublicBroadcastMarkers = [];
 
   }  
   
 
   ngAfterViewInit(){
       this.geocoder.on('result', (e: object) => {
-        console.log(e)
         this.data.changeGeocoderObject(e);
         this.data.changeGeocoderFlag(true);
         
@@ -102,13 +122,7 @@ export class MapComponent implements OnInit, AfterViewInit {
   } 
 
   DisplayCollectionsOnMap(){
-      // remove markers 
-      if (this.currentCollectionMarkers!==null) {
-        for (var i = this.currentCollectionMarkers.length - 1; i >= 0; i--) {
-          this.currentCollectionMarkers[i].remove();
-        }
-      }
-      this.currentCollectionMarkers = [];
+    this.clearMarkers("collection", 0);
       for (let i = 0; i < this.selectedCollections.length; i++){
         for (var key in this.selectedCollections[i]) {
           console.log(this.selectedCollections[i][key])
@@ -134,61 +148,79 @@ export class MapComponent implements OnInit, AfterViewInit {
 
                                 
               this.currentCollectionMarkers.push(thisMarker);
-              console.log(thisMarker)
-              console.log(el.style)
           }
         }
       }
   }
 
-  DisplayBroadcastsOnMap(){
+  DisplayBroadcastsOnMap(type, broadcasts){
+      this.clearMarkers("broadcast", type);
+      console.log(broadcasts)
+      for (let i = 0; i < broadcasts.length; i++){
+        // create a HTML element for each feature
+        var el = document.createElement('div');
+        el.style.backgroundImage = 'url(' + broadcasts[i]["markerLogo"] + ')';
+        el.style.backgroundSize = "cover";
+        el.style.backgroundPosition = "center center";
+        el.style.width = "30px";
+        el.style.height = "30px";
+        el.style.borderRadius = "50%";
+        el.style.cursor = "pointer";
+        
+        // make a marker for each feature and add to the map
+        let thisMarker = new mapboxgl.Marker(el)
+          .setLngLat([broadcasts[i]['coordinates'][0], broadcasts[i]['coordinates'][1]])
+          .setPopup(new mapboxgl.Popup({ offset: 25 })
+          .setHTML('<h3>' + broadcasts[i]['broadcastName'] + '</h3><p>' + broadcasts[i]['description'] + '</p>'))
+          .addTo(this.map);
 
-      this.clearMarkers("broadcast");
-      this.currentBroadcastMarkers = this.selectedBroadcasts
-      for (let i = 0; i < this.selectedBroadcasts.length; i++){
-        let id = 'broadcast' + i
-        this.map.addLayer({
-          id: id,
-          type: 'symbol',
-          source: {
-            type: 'geojson',
-            data: {
-              type: 'Feature',
-              properties: {},
-              geometry: {
-                type: 'Point',
-                coordinates: [this.selectedBroadcasts[i]['coordinates'][0], this.selectedBroadcasts[i]['coordinates'][1]]
-              }
-            }
-          },
-          layout: {
-            'icon-image': 'embassy-15',
-            'icon-padding': 0,
-            'icon-allow-overlap': true
-            }
-        });
+        if(type == 0){
+          this.currentMyBroadcastMarkers.push(thisMarker);
+        }    
+        if(type == 1){
+          this.currentFollowingBroadcastMarkers.push(thisMarker);
+        }   
+        if(type == 2){
+          this.currentPublicBroadcastMarkers.push(thisMarker);
+        }           
+        
       }
   }
 
-  clearMarkers(type){
-    console.log(type)
+  clearMarkers(type, broadcastType){
     if (type == "collection"){
-      for (let i = 0; i < this.markerCount; i++){
-        let id = 'collection' + i;
-        this.map.removeLayer(id);
-        this.map.removeSource(id);
+      // remove markers 
+      if (this.currentCollectionMarkers!==null) {
+        for (var i = this.currentCollectionMarkers.length - 1; i >= 0; i--) {
+          this.currentCollectionMarkers[i].remove();
+        }
       }
-      this.markerCount = 0;
+      this.currentCollectionMarkers = [];
     }
-    else if (type == "broadcast"){
-      for (let i = 0; i < this.currentBroadcastMarkers.length; i++){
-        console.log(this.currentBroadcastMarkers);
-        let id = 'broadcast' + i;
-        this.map.removeLayer(id);
-        this.map.removeSource(id);
-        
+    else if (type == "broadcast" && broadcastType == 0){
+      if (this.currentMyBroadcastMarkers!==null) {
+        for (var i = this.currentMyBroadcastMarkers.length - 1; i >= 0; i--) {
+          this.currentMyBroadcastMarkers[i].remove();
+        }
+        this.currentMyBroadcastMarkers = [];
       }
     }
+    else if(type == "broadcast" && broadcastType == 1){
+      if (this.currentFollowingBroadcastMarkers!==null) {
+        for (var i = this.currentFollowingBroadcastMarkers.length - 1; i >= 0; i--) {
+          this.currentFollowingBroadcastMarkers[i].remove();
+        }
+        this.currentFollowingBroadcastMarkers = [];
+      }
+    } 
+    else if(type == "broadcast" && broadcastType == 2){
+      if (this.currentPublicBroadcastMarkers!==null) {
+        for (var i = this.currentPublicBroadcastMarkers.length - 1; i >= 0; i--) {
+          this.currentPublicBroadcastMarkers[i].remove();
+        }
+        this.currentPublicBroadcastMarkers = [];
+      }
+    } 
 
   }
 }
