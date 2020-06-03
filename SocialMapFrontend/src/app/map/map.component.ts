@@ -143,7 +143,9 @@ export class MapComponent implements OnInit, AfterViewInit {
               let thisMarker = new mapboxgl.Marker(el)
                 .setLngLat([this.selectedCollections[i][key]['coordinates'][0], this.selectedCollections[i][key]['coordinates'][1]])
                 .setPopup(new mapboxgl.Popup({ offset: 25 })
-                .setHTML('<h3>' + this.selectedCollections[i][key]['title'] + '</h3><p>' + this.selectedCollections[i][key]['description'] + '</p>'))
+                .setHTML('<h3>' + this.selectedCollections[i][key]['title'] + '</h3>' +
+                            '<p>' + this.selectedCollections[i][key]['description'] + '</p>' +
+                            '<footer> <p> By:' + this.selectedCollections[i]['owner'] + '</p></footer>'))
                 .addTo(this.map);
 
                                 
@@ -167,11 +169,16 @@ export class MapComponent implements OnInit, AfterViewInit {
         el.style.borderRadius = "50%";
         el.style.cursor = "pointer";
         
+        let thisDate = new Date(broadcasts[i]['time']);
+
         // make a marker for each feature and add to the map
         let thisMarker = new mapboxgl.Marker(el)
           .setLngLat([broadcasts[i]['coordinates'][0], broadcasts[i]['coordinates'][1]])
           .setPopup(new mapboxgl.Popup({ offset: 25 })
-          .setHTML('<h3>' + broadcasts[i]['broadcastName'] + '</h3><p>' + broadcasts[i]['description'] + '</p>'))
+          .setHTML('<h3>' + broadcasts[i]['broadcastName'] + '</h3>'+
+                    '<p>' + broadcasts[i]['description'] + '</p>' +
+                    '<footer> <p> By:' + broadcasts[i]['owner'] + '<br>'
+                    + thisDate.toLocaleString() + '</p></footer>'))
           .addTo(this.map);
 
         if(type == 0){

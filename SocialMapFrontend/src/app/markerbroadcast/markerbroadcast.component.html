@@ -50,6 +50,19 @@
 <mat-card>
     <mat-card-content> 
         <div *ngIf="markerBroadcasts as broadcasts">
+            <mat-form-field>
+                <mat-label>Date:</mat-label>
+                <mat-select [(value)]="selectedDay" (selectionChange)="changeFilterDate()">
+                  <mat-option value="0">Today</mat-option>
+                  <mat-option value="1">Tomorrow</mat-option>
+                  <mat-option value="2">{{twoDay | date: 'shortDate'}}</mat-option>
+                  <mat-option value="3">{{threeDay | date: 'shortDate'}}</mat-option>
+                  <mat-option value="4">{{fourDay | date: 'shortDate'}}</mat-option>
+                  <mat-option value="5">{{fiveDay | date: 'shortDate'}}</mat-option>
+                  <mat-option value="6">{{sixDay | date: 'shortDate'}}</mat-option>
+                </mat-select>
+              </mat-form-field>
+              <br>
             <mat-label>Show My Broadcasts</mat-label>
             <mat-slide-toggle  [(ngModel)]="displayMyFlag" (click)="hideBroadcasts(0)"></mat-slide-toggle>
             <br>
