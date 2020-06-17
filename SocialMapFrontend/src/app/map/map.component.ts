@@ -19,6 +19,7 @@ import { Observable } from 'rxjs';
 export class MapComponent implements OnInit, AfterViewInit {
   map: mapboxgl.Map;
   geocoder: MapboxGeocoder;
+  geolocate: mapboxgl.GeolocateControl;
   geocoderObject: object;
   geocoderFlag: boolean;
   selectedCollections: Array<String>;
@@ -48,7 +49,6 @@ export class MapComponent implements OnInit, AfterViewInit {
         this.clearMarkers("broadcast", 0);
         this.clearMarkers("broadcast", 1);
         this.clearMarkers("broadcast", 2);
-        
       }
     });
   }
@@ -76,9 +76,11 @@ export class MapComponent implements OnInit, AfterViewInit {
       },
       mapboxgl: mapboxgl
     })
+    this.geolocate = new mapboxgl.GeolocateControl();
+
     this.map.addControl(this.geocoder, 'top-left');
     this.map.addControl(new mapboxgl.NavigationControl());
-    this.map.addControl(new mapboxgl.GeolocateControl());
+    this.map.addControl(this.geolocate);
 
     if (this.data.displayCollectionSub==undefined) {    
       this.data.displayCollectionSub = this.data.invokeDisplayCollections.subscribe((name:string) => {    
@@ -107,17 +109,23 @@ export class MapComponent implements OnInit, AfterViewInit {
     this.currentPublicBroadcastMarkers = [];
 
   }  
-  
+
 
   ngAfterViewInit(){
       this.geocoder.on('result', (e: object) => {
         this.data.changeGeocoderObject(e);
         this.data.changeGeocoderFlag(true);
         
-    this.geocoder.mapMarker.on('dragend', (e) => {
-      this.data.changeGeocoderObjectLngLat(e.target.getLngLat());
-      this.data.changeGeocoderFlag(true); 
-    });
+        this.geocoder.mapMarker.on('dragend', (e) => {
+          this.data.changeGeocoderObjectLngLat(e.target.getLngLat());
+          this.data.changeGeocoderFlag(true); 
+        });
+      });
+        
+      this.geolocate.on('geolocate', (e) => {
+        let position = {"lng": e.coords.longitude, "lat": e.coords.latitude};
+        this.data.changeGeocoderObjectLngLat(position);
+        this.data.changeGeocoderFlag(true); 
       });
   } 
 
@@ -169,7 +177,8 @@ export class MapComponent implements OnInit, AfterViewInit {
         el.style.borderRadius = "50%";
         el.style.cursor = "pointer";
         
-        let thisDate = new Date(broadcasts[i]['time']);
+        let startDate = new Date(broadcasts[i]['start']);
+        let endDate = new Date(broadcasts[i]['end']);
 
         // make a marker for each feature and add to the map
         let thisMarker = new mapboxgl.Marker(el)
@@ -178,7 +187,7 @@ export class MapComponent implements OnInit, AfterViewInit {
           .setHTML('<h3>' + broadcasts[i]['broadcastName'] + '</h3>'+
                     '<p>' + broadcasts[i]['description'] + '</p>' +
                     '<footer> <p> By:' + broadcasts[i]['owner'] + '<br>'
-                    + thisDate.toLocaleString() + '</p></footer>'))
+                    + startDate.toLocaleString() + ' to ' + endDate.toLocaleString() + '</p></footer>'))
           .addTo(this.map);
 
         if(type == 0){

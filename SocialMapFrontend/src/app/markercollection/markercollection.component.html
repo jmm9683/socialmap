@@ -5,7 +5,7 @@
         <ng-template [ngIf]="geocoderFlag">
             <form [formGroup]="markerForm">
                 <mat-form-field>
-                    <input type="text" pattern="^[a-zA-Z0-9_-]*$" matInput placeholder="Collection" formControlName="collection" [matAutocomplete]="auto">           
+                    <input type="text" pattern="^\w+( \w+)*$" matInput placeholder="Collection" formControlName="collection" [matAutocomplete]="auto">           
                     <mat-autocomplete #auto="matAutocomplete">
                     <mat-option *ngFor="let collection of myMarkerCollection | async" [value]="collection.collectionName">
                         {{collection.collectionName}}
@@ -34,7 +34,7 @@
             </form>
         </ng-template>
         <ng-template [ngIf]="!geocoderFlag">
-            <p style="text-align: center;">Search a Location to Add to a Collection.</p>
+            <p style="text-align: center;">Search or Use Current Location to Add to a Collection.</p>
         </ng-template>
     </mat-card-content>
 </mat-card>
@@ -63,6 +63,39 @@
         </div>
     </mat-card-content>
 </mat-card>
+<br>
 
+<div *ngIf="myMarkerCollection | async as collections">
+    <ng-template [ngIf]="(collections | json) != ([] | json)">
+        <mat-card>
+            <mat-card-content>
+                <div *ngIf="!editing" style="text-align: center;">
+                    <button mat-stroked-button (click)="editCollections()">Edit My Collections</button>
+                </div>
+                <div *ngIf="editing" style="text-align: center;">
+                    <mat-accordion>
+                        <mat-expansion-panel *ngFor="let collection of collections">
+                            <mat-expansion-panel-header>
+                              {{collection.collectionName}}
+                            </mat-expansion-panel-header>
+                            <mat-list-item *ngFor="let markers of collection | keyvalue">
+                                <div *ngIf="collection[markers.key]['title']">
+                                    <span mat-line>{{collection[markers.key].title}}</span>
+                                    <button mat-stroked-button (click)="deleteCollectionMarker(collection.collectionName, markers.key)"><mat-icon>cancel</mat-icon></button>
+                                    <br>
+                                </div>
+                                <div *ngIf="markers.key == 'collectionName'">
+                                    <button mat-stroked-button (click)="deleteCollectionMarker(collection.collectionName, null)">Delete Collection</button>
+                                </div>
+                            </mat-list-item>
+                          </mat-expansion-panel>
+                    </mat-accordion>
+                    <br>
+                    <button mat-stroked-button (click)="editCollections()">Close Editing</button>
+                </div>
+            </mat-card-content>
+        </mat-card>
+    </ng-template>
+</div>
 
 

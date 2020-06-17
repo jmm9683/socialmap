@@ -4,6 +4,7 @@ import { UserService } from '../services/user.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AngularFireDatabase } from '@angular/fire/database'; 
 import { AngularFireAuth } from '@angular/fire/auth';
+import * as firebase from 'firebase';
 import { Observable } from 'rxjs';
 
 
@@ -20,6 +21,7 @@ export class MarkercollectionComponent implements OnInit {
   markerCollection: object;
   myMarkerCollection: object;
   following: Array<any> = [];
+  editing = false;
 
   constructor(private data: DataService, private formBuilder: FormBuilder, public db: AngularFireDatabase, private afAuth: AngularFireAuth, public user: UserService ) {}
   
@@ -82,6 +84,22 @@ export class MarkercollectionComponent implements OnInit {
     this.selectedCollections = [];
     this.data.changeSelectedCollections(this.selectedCollections);
     this.data.DisplayCollectionsOnMap(); 
+  }
+
+  editCollections(){
+    this.editing = !this.editing;
+  }
+  deleteCollectionMarker(collection, marker){
+    //delete collection
+    if(marker == null){
+      let ref = firebase.database().ref(`markerCollections/${this.user.currentUser.uid}/${collection}/`);
+      ref.remove()
+    }
+    //delete marker in collection
+    else{
+      let ref = firebase.database().ref(`markerCollections/${this.user.currentUser.uid}/${collection}/${marker}/`);
+      ref.remove()
+    }
   }
 
 }

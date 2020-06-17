@@ -9,9 +9,9 @@ import { Observable } from 'rxjs';
 export class DataService {
     private geocoderObject = new BehaviorSubject<object>(
         {"result": {
-            "place_name": "temp",
+            "place_name": "Current Location",
             "center": [0,0],
-            "text": "temp"
+            "text": "Current Location"
         }
     });
     private geocoderFlag = new BehaviorSubject<boolean>(false);
@@ -39,6 +39,7 @@ export class DataService {
     }
 
     changeGeocoderObjectLngLat(lnglat: object){
+        console.log(lnglat)
         console.log(lnglat["lng"])
         console.log(lnglat["lat"])
         let center = [lnglat["lng"], lnglat["lat"]]

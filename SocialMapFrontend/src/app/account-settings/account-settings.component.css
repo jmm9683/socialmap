@@ -14,8 +14,8 @@
 .middle {
     transition: .5s ease;
     opacity: 0;
-    position: absolute;
-    top: 25%;
+    position: relative;
+    top: 0%;
     left: 50%;
     transform: translate(-50%, -50%);
     -ms-transform: translate(-50%, -50%);

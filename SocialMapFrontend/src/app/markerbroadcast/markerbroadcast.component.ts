@@ -12,7 +12,8 @@ import * as firebase from 'firebase';
 
 export interface Broadcast {
   broadcastName: string;
-  time: Number;
+  start: Number;
+  end: Number;
   description: string;
 }
 
@@ -33,8 +34,12 @@ export class MarkerbroadcastComponent implements OnInit {
   following: Array<any> = [];
   minDate
   isPublic = false;
+  
   now = new Date();
-  oneDay = new Date(this.now.getTime() + 86400000);
+  startDate;
+  maxDate;
+  todaysDate = new Date(this.now.getFullYear(), this.now.getMonth(), this.now.getDate())
+  oneDay = new Date(this.todaysDate.getTime() + 86400000);
   twoDay = new Date(this.oneDay.getTime() + 86400000);
   threeDay = new Date(this.twoDay.getTime() + 86400000);
   fourDay = new Date(this.threeDay.getTime() + 86400000);
@@ -43,7 +48,7 @@ export class MarkerbroadcastComponent implements OnInit {
   sevenDay = new Date(this.sixDay.getTime() + 86400000);
   selectedDay = "0";
 
-  displayedColumns = ['select', 'time', 'owner', 'title', 'description'];
+  displayedColumns = ['select', 'strat', 'end', 'owner', 'title', 'description'];
   dataSource
   selection = new SelectionModel<Broadcast>(true, []);
   isAllSelected() {
@@ -75,7 +80,8 @@ export class MarkerbroadcastComponent implements OnInit {
         longitude: [this.geocoderObject["result"]["center"][0],Validators.compose([Validators.required])],
         lattitude: [this.geocoderObject["result"]["center"][1],Validators.compose([Validators.required])],
         description: ['',Validators.compose([Validators.required])],
-        time: ['',Validators.compose([Validators.required])]
+        start: ['',Validators.compose([Validators.required])],
+        end: ['',Validators.compose([Validators.required])]
       })
     });
     this.db.object(`following/${this.user.currentUser.uid}`).valueChanges().subscribe((following : Object) => {
@@ -101,9 +107,14 @@ export class MarkerbroadcastComponent implements OnInit {
     
     this.minDate = new Date();
     this.minDate.setDate(this.now.getDate());
+  }
 
-    
-  
+  updateStartDate(){
+    // this.maxDate = new Date(this.startDate.getTime() + 86400000);
+    let tempDate = new Date(this.startDate.getFullYear(), this.startDate.getMonth(), this.startDate.getDate());
+    this.maxDate = new Date(tempDate.getTime() + 86399000);
+  }
+  updateEndDate(){
   }
 
   addMarker(){
@@ -114,14 +125,16 @@ export class MarkerbroadcastComponent implements OnInit {
     
     let title = this.markerForm.controls['title'].value;
     let description = this.markerForm.controls['description'].value;
-    let time = this.markerForm.controls['time'].value;
+    let start = this.markerForm.controls['start'].value;
+    let end = this.markerForm.controls['end'].value;
     let longitude = this.markerForm.controls['longitude'].value;
     let lattitude = this.markerForm.controls['lattitude'].value;
     let newMarker = {
       "owner": this.user.currentUser.username,
       "broadcastName": title,
       "description": description,
-      "time": time.getTime(),
+      "start": start.getTime(),
+      "end": end.getTime(),
       "coordinates": [[longitude], [lattitude]],
       "markerLogo": this.user.currentUser.propicURL,
       "public": this.isPublic
@@ -162,15 +175,15 @@ export class MarkerbroadcastComponent implements OnInit {
   getBroadcastDay(type, start, end, following){
     if(type == 0){
       let ref = firebase.database().ref(`/markerBroadcasts/${this.user.currentUser.uid}/`);
-      return ref.orderByChild("time").startAt(start).endAt(end).once('value')
+      return ref.orderByChild("end").startAt(start).endAt(end).once('value')
     }
     if(type == 1){
       let ref = firebase.database().ref(`/markerBroadcasts/${following}/`);
-      return ref.orderByChild("time").startAt(start).endAt(end).once('value')
+      return ref.orderByChild("end").startAt(start).endAt(end).once('value')
     }
     if(type == 2){
       let ref = firebase.database().ref(`/publicBroadcasts/`);
-      return ref.orderByChild("time").startAt(start).endAt(end).once('value')
+      return ref.orderByChild("end").startAt(start).endAt(end).once('value')
     }
   }
   

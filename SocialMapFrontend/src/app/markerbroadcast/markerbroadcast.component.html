@@ -11,10 +11,21 @@
                 </mat-form-field>
                 <br>
                 <mat-form-field>
-                    <input matInput [ngxMatDatetimePicker]="picker" placeholder="Choose a date" formControlName="time"
-                        [min]="minDate" [max]="maxDate" [disabled]="disabled">
-                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-                    <ngx-mat-datetime-picker #picker [showSpinners]="showSpinners" [showSeconds]="showSeconds"
+                    <input matInput [ngxMatDatetimePicker]="start" placeholder="Choose a start time" formControlName="start"
+                        [min]="minDate" [disabled]="disabled" [(ngModel)]="startDate" readonly (dateInput)="updateStartDate()" (dateChange)="updateStartDate()">
+                    <mat-datepicker-toggle matSuffix [for]="start"></mat-datepicker-toggle>
+                    <ngx-mat-datetime-picker #start [showSpinners]="showSpinners" [showSeconds]="true"
+                        [stepHour]="stepHour" [stepMinute]="stepMinute" [stepSecond]="stepSecond"
+                        [touchUi]="touchUi" [color]="color" [enableMeridian]="enableMeridian" 
+                        [disableMinute]="disableMinute" [hideTime]="hideTime">
+                    </ngx-mat-datetime-picker>
+                </mat-form-field>
+                <br>
+                <mat-form-field>
+                    <input matInput [ngxMatDatetimePicker]="end" placeholder="Choose an end time" formControlName="end"
+                        [min]="startDate" [max]="maxDate" [disabled]="disabled" [(ngModel)]="endDate" readonly>
+                    <mat-datepicker-toggle matSuffix [for]="end"></mat-datepicker-toggle>
+                    <ngx-mat-datetime-picker #end [showSpinners]="showSpinners" [showSeconds]="true"
                         [stepHour]="stepHour" [stepMinute]="stepMinute" [stepSecond]="stepSecond"
                         [touchUi]="touchUi" [color]="color" [enableMeridian]="enableMeridian" 
                         [disableMinute]="disableMinute" [hideTime]="hideTime">
@@ -42,7 +53,7 @@
             </form>
         </ng-template>
         <ng-template [ngIf]="!geocoderFlag">
-            <p style="text-align: center;">Search a Location to Add to a Broadcast.</p>
+            <p style="text-align: center;">Search or Use Current Location to Create a Broadcast.</p>
         </ng-template>
     </mat-card-content>
 </mat-card>
@@ -118,10 +129,15 @@
                       <mat-cell *matCellDef="let element"> {{element.description}} </mat-cell>
                     </ng-container>
                 
-                    <ng-container matColumnDef="time">
-                      <mat-header-cell *matHeaderCellDef> Time </mat-header-cell>
-                      <mat-cell *matCellDef="let element"> {{element.time | date:'short'}} </mat-cell>
+                    <ng-container matColumnDef="start">
+                      <mat-header-cell *matHeaderCellDef> Start </mat-header-cell>
+                      <mat-cell *matCellDef="let element"> {{element.start | date:'short'}} </mat-cell>
                     </ng-container>
+
+                    <ng-container matColumnDef="end">
+                        <mat-header-cell *matHeaderCellDef> End </mat-header-cell>
+                        <mat-cell *matCellDef="let element"> {{element.end | date:'short'}} </mat-cell>
+                      </ng-container>
                 
                     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
                     <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="selection.toggle(row);">
