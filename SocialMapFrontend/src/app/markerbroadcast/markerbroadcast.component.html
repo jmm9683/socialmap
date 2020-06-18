@@ -60,7 +60,6 @@
 <br>
 <mat-card>
     <mat-card-content> 
-        <div *ngIf="markerBroadcasts as broadcasts">
             <mat-form-field>
                 <mat-label>Date:</mat-label>
                 <mat-select [(value)]="selectedDay" (selectionChange)="changeFilterDate()">
@@ -82,71 +81,29 @@
             <br>
             <mat-label>Show Public Broadcast</mat-label>
             <mat-slide-toggle [(ngModel)]="displayPublicFlag" (click)="hideBroadcasts(2)"></mat-slide-toggle>
-            <!-- <ng-template [ngIf]="(broadcasts | json) == ([] | json)">
-                <p style="text-align: center;">No Broadcasts to Show.</p>
-            </ng-template> -->
-            <ng-template [ngIf]="(broadcasts | json) != ([] | json)">
-                <!-- <mat-selection-list #collectionList [(ngModel)]="selectedBroadcasts" (ngModelChange)="changeSelectedBroadcasts()">
-                    <mat-list-option *ngFor="let name of broadcasts" [value]="name.broadcastName">
-                        {{name.broadcastName}}
-                    </mat-list-option>
-                </mat-selection-list> -->
-                <mat-form-field>
-                    <mat-label>Filter</mat-label>
-                    <input matInput (keyup)="applyFilter($event);" placeholder="Ex. ium">
-                </mat-form-field> 
-                <!-- <button mat-stroked-button (click)=" clearSelectedBroadcasts()">Clear Broadcasts</button>                  -->
-                <mat-table #table [dataSource]="dataSource">
-                    <!-- Checkbox Column -->
-                    <ng-container matColumnDef="select">
-                        <mat-header-cell *matHeaderCellDef>
-                          <mat-checkbox (change)="$event ? masterToggle() : null; changeSelectedBroadcasts()"
-                                        [checked]="selection.hasValue() && isAllSelected()"
-                                        [indeterminate]="selection.hasValue() && !isAllSelected()"
-                                        (ngModelChange)="changeSelectedBroadcasts()">
-                          </mat-checkbox>
-                        </mat-header-cell>
-                        <mat-cell *matCellDef="let row">
-                          <mat-checkbox (click)="$event.stopPropagation();"
-                                        (change)="$event ? selection.toggle(row) : null; changeSelectedBroadcasts()"
-                                        [checked]="selection.isSelected(row)">
-                          </mat-checkbox>
-                        </mat-cell>
-                    </ng-container>
-
-                    <ng-container matColumnDef="title">
-                      <mat-header-cell *matHeaderCellDef> Title </mat-header-cell>
-                      <mat-cell *matCellDef="let element"> {{element.broadcastName}} </mat-cell>
-                    </ng-container>
-
-                    <ng-container matColumnDef="owner">
-                        <mat-header-cell *matHeaderCellDef> Owner </mat-header-cell>
-                        <mat-cell *matCellDef="let element"> {{element.owner}} </mat-cell>
-                      </ng-container>
-
-                    <ng-container matColumnDef="description">
-                      <mat-header-cell *matHeaderCellDef> Description </mat-header-cell>
-                      <mat-cell *matCellDef="let element"> {{element.description}} </mat-cell>
-                    </ng-container>
-                
-                    <ng-container matColumnDef="start">
-                      <mat-header-cell *matHeaderCellDef> Start </mat-header-cell>
-                      <mat-cell *matCellDef="let element"> {{element.start | date:'short'}} </mat-cell>
-                    </ng-container>
-
-                    <ng-container matColumnDef="end">
-                        <mat-header-cell *matHeaderCellDef> End </mat-header-cell>
-                        <mat-cell *matCellDef="let element"> {{element.end | date:'short'}} </mat-cell>
-                      </ng-container>
-                
-                    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-                    <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="selection.toggle(row);">
-                    </mat-row>
-                </mat-table>
-            </ng-template>
-        </div>
     </mat-card-content>
 </mat-card>
+<br>
+<div *ngIf="myMarkerBroadcasts | async as broadcasts">
+    <ng-template [ngIf]="(collections | json) != ([] | json)">
+        <mat-card>
+            <mat-card-content>
+                <div *ngIf="!editing" style="text-align: center;">
+                    <button mat-stroked-button (click)="editBroadcasts()">Edit My Broadcasts</button>
+                </div>
+                <div *ngIf="editing" style="text-align: center;">
+                        <mat-list-item *ngFor="let markers of broadcasts | keyvalue">
+                            <span mat-line>{{broadcasts[markers.key].broadcastName}} from {{broadcasts[markers.key].start |  date:'short'}} to {{broadcasts[markers.key].end | date:'shortTime'}}</span>
+                            <button mat-stroked-button (click)="deleteBroadcast(markers.key)"><mat-icon>cancel</mat-icon></button>
+                            <br>
+                        </mat-list-item>
+                    <br>
+                    <button mat-stroked-button (click)="editBroadcasts()">Close Editing</button>
+                </div>
+            </mat-card-content>
+        </mat-card>
+    </ng-template>
+</div>
 
 
 

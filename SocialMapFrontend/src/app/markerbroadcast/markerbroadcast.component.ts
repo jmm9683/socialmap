@@ -10,12 +10,6 @@ import { SelectionModel } from '@angular/cdk/collections';
 import { MatSort } from '@angular/material/sort';
 import * as firebase from 'firebase';
 
-export interface Broadcast {
-  broadcastName: string;
-  start: Number;
-  end: Number;
-  description: string;
-}
 
 
 @Component({
@@ -27,14 +21,14 @@ export class MarkerbroadcastComponent implements OnInit {
   geocoderObject: object;
   geocoderFlag: boolean;
   markerForm: FormGroup;
-  markerBroadcasts: Array<any> = [];
+  myMarkerBroadcasts: object;
   myBroadcasts:  Array<any> = [];
   followingBroadcasts: Array<any> = [];
   publicBroadcasts: Array<any> = [];
   following: Array<any> = [];
   minDate
   isPublic = false;
-  
+  editing = false;
   now = new Date();
   startDate;
   maxDate;
@@ -48,29 +42,10 @@ export class MarkerbroadcastComponent implements OnInit {
   sevenDay = new Date(this.sixDay.getTime() + 86400000);
   selectedDay = "0";
 
-  displayedColumns = ['select', 'strat', 'end', 'owner', 'title', 'description'];
-  dataSource
-  selection = new SelectionModel<Broadcast>(true, []);
-  isAllSelected() {
-    const numSelected = this.selection.selected.length;
-    const numRows = this.dataSource.data.length;
-    return numSelected === numRows;
-  }
-  /** Selects all rows if they are not all selected; otherwise clear selection. */
-  masterToggle() {
-    this.isAllSelected() ?
-        this.selection.clear() :
-        this.dataSource.data.forEach(row => this.selection.select(row));
-  }
-  applyFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-  }
-
   constructor(private data: DataService, private formBuilder: FormBuilder, public db: AngularFireDatabase, private afAuth: AngularFireAuth, public user: UserService ) {}
   
   ngOnInit() {
-    
+    this.myMarkerBroadcasts = this.db.object(`markerBroadcasts/${this.user.currentUser.uid}/`).valueChanges();
     this.db.list(`markerBroadcasts/${this.user.currentUser.uid}/`).valueChanges().subscribe( data => {
       this.filterDay(0, 0);
     })
@@ -308,5 +283,11 @@ export class MarkerbroadcastComponent implements OnInit {
     }
   }
 
-
+  editBroadcasts(){
+    this.editing = !this.editing;
+  }
+  deleteBroadcast(broadcast){
+    let ref = firebase.database().ref(`markerBroadcasts/${this.user.currentUser.uid}/${broadcast}/`);
+    ref.remove()
+  }
 }
