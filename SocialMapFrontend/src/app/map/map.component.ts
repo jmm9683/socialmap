@@ -178,7 +178,19 @@ export class MapComponent implements OnInit, AfterViewInit {
         el.style.cursor = "pointer";
         
         let startDate = new Date(broadcasts[i]['start']);
+        let startHours = startDate.getHours();
+        let startPeriod = "AM"
+        if (startHours > 12){
+          startHours = startHours - 12;
+          startPeriod = "PM"
+        }
         let endDate = new Date(broadcasts[i]['end']);
+        let endHours = endDate.getHours();
+        let endPeriod = "AM"
+        if (endHours > 12){
+          endHours = endHours - 12;
+          endPeriod = "PM"
+        }
 
         // make a marker for each feature and add to the map
         let thisMarker = new mapboxgl.Marker(el)
@@ -187,7 +199,8 @@ export class MapComponent implements OnInit, AfterViewInit {
           .setHTML('<h3>' + broadcasts[i]['broadcastName'] + '</h3>'+
                     '<p>' + broadcasts[i]['description'] + '</p>' +
                     '<footer> <p> By:' + broadcasts[i]['owner'] + '<br>'
-                    + startDate.toLocaleString() + ' to ' + endDate.toLocaleString() + '</p></footer>'))
+                    + startDate.getMonth() +  '/' + startDate.getDay() + '/' + startDate.getFullYear() + ', ' + startHours + ':' + startDate.getMinutes() + ' ' + startPeriod +  
+                    ' to ' + endHours + ':' + endDate.getMinutes() + ' ' + endPeriod + '</p></footer>'))
           .addTo(this.map);
 
         if(type == 0){
