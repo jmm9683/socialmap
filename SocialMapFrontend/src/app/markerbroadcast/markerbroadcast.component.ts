@@ -64,12 +64,6 @@ export class MarkerbroadcastComponent implements OnInit {
       this.followingBroadcasts = []
       this.following = [];
       for (let thisFollowing in following){
-        // this.db.list(`markerBroadcasts/${thisFollowing}/`).valueChanges().subscribe( data => {
-        //   for(let i in data){
-        //     this.followingBroadcasts.push(data[i]);
-        //   }
-        //   this.displayFollowingBroadcasts();
-        // })
         this.db.object(`users/${thisFollowing}/`).valueChanges().subscribe(followingInfo => {
           this.following.push({"uid": thisFollowing, "username": followingInfo['username']});
           this.filterDay(1, 0);
@@ -171,15 +165,19 @@ export class MarkerbroadcastComponent implements OnInit {
       for (let i in data){
         this.myBroadcasts.push(data[i])
       }
-      this.displayMyBroadcasts();
+      if(this.displayMyFlag){
+        this.displayMyBroadcasts();
+      }
+      
     }
     if(type == 1){
       let data = snapshot.val();
       for (let i in data){
         this.followingBroadcasts.push(data[i]);
       }
-      this.displayFollowingBroadcasts();
-
+      if(this.displayFollowingFlag){
+        this.displayFollowingBroadcasts();
+      }
     }
     if(type == 2){
       this.publicBroadcasts = [];
@@ -188,7 +186,9 @@ export class MarkerbroadcastComponent implements OnInit {
       for (let i in data){
         this.publicBroadcasts.push(data[i])
       }
-      this.displayPublicBroadcasts();
+      if(this.displayPublicFlag){
+        this.displayPublicBroadcasts();
+      }
     }
   }
 
