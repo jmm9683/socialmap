@@ -9,6 +9,23 @@
                     <mat-slide-toggle  [(ngModel)]="isPublic" [ngModelOptions]="{standalone: true}"></mat-slide-toggle>
                     <textarea matInput hidden></textarea>
                 </mat-form-field>
+                <div *ngIf="isPublic">
+                    <mat-form-field>
+                        <mat-label>Icon Type:</mat-label>
+                        <mat-select [(value)]="selectedIcon">
+                            <mat-option value="bar-15">Bar</mat-option>
+                            <mat-option value="cinema-15">Cinema</mat-option>
+                            <mat-option value="clothing-store-15">Clothing Store</mat-option>
+                            <mat-option value="embassy-15">Flag</mat-option>
+                            <mat-option value="gift-15">Gift</mat-option>
+                            <mat-option value="ice-cream-15">Ice Cream</mat-option>
+                            <mat-option value="lodging-15">Lodging</mat-option>
+                            <mat-option value="music-15">Music</mat-option>
+                            <mat-option value="circle-15">Plain Circle</mat-option>
+                            <mat-option value="restaurant-15">Restaurant</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
                 <br>
                 <mat-form-field>
                     <input matInput [ngxMatDatetimePicker]="start" placeholder="Choose a start time" formControlName="start"
@@ -94,7 +111,7 @@
                 <div *ngIf="editing" style="text-align: center;">
                         <mat-list-item *ngFor="let markers of broadcasts | keyvalue">
                             <span mat-line>{{broadcasts[markers.key].broadcastName}} from {{broadcasts[markers.key].start |  date:'short'}} to {{broadcasts[markers.key].end | date:'shortTime'}}</span>
-                            <button mat-stroked-button (click)="deleteBroadcast(markers.key)"><mat-icon>cancel</mat-icon></button>
+                            <button mat-stroked-button (click)="deleteBroadcast(markers.key, broadcasts[markers.key])"><mat-icon>cancel</mat-icon></button>
                             <br>
                         </mat-list-item>
                     <br>

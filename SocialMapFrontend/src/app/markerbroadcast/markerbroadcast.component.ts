@@ -41,6 +41,7 @@ export class MarkerbroadcastComponent implements OnInit {
   sixDay = new Date(this.fiveDay.getTime() + 86400000);
   sevenDay = new Date(this.sixDay.getTime() + 86400000);
   selectedDay = "0";
+  selectedIcon = "embassy-15";
 
   constructor(private data: DataService, private formBuilder: FormBuilder, public db: AngularFireDatabase, private afAuth: AngularFireAuth, public user: UserService ) {}
   
@@ -112,7 +113,8 @@ export class MarkerbroadcastComponent implements OnInit {
       "end": end.getTime(),
       "coordinates": [[longitude], [lattitude]],
       "markerLogo": this.user.currentUser.propicURL,
-      "public": this.isPublic
+      "public": this.isPublic,
+      "icon": this.selectedIcon
     };
 
     this.db.list(`markerBroadcasts/${this.user.currentUser.uid}/`).push(newMarker).then((snap) => {
@@ -286,8 +288,12 @@ export class MarkerbroadcastComponent implements OnInit {
   editBroadcasts(){
     this.editing = !this.editing;
   }
-  deleteBroadcast(broadcast){
-    let ref = firebase.database().ref(`markerBroadcasts/${this.user.currentUser.uid}/${broadcast}/`);
+  deleteBroadcast(broadcastKey, broadcast){
+    if(broadcast.public){
+      let pubRef = firebase.database().ref(`publicBroadcasts/${broadcast.publicKey}/`);
+      pubRef.remove()
+    }
+    let ref = firebase.database().ref(`markerBroadcasts/${this.user.currentUser.uid}/${broadcastKey}/`);
     ref.remove()
   }
 }

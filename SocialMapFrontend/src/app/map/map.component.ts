@@ -62,7 +62,7 @@ export class MapComponent implements OnInit, AfterViewInit {
     this.data.currentPublicBroadcasts.subscribe(publicBroadcasts => this.publicBroadcasts = publicBroadcasts);
 
     Object.getOwnPropertyDescriptor(mapboxgl, "accessToken").set(environment.mapbox.accessToken);
-      this.map = new mapboxgl.Map({
+    this.map = new mapboxgl.Map({
         container: 'map',
         style: this.style,
         zoom: 12,
@@ -81,7 +81,6 @@ export class MapComponent implements OnInit, AfterViewInit {
     this.map.addControl(this.geocoder, 'top-left');
     this.map.addControl(new mapboxgl.NavigationControl());
     this.map.addControl(this.geolocate);
-
     if (this.data.displayCollectionSub==undefined) {    
       this.data.displayCollectionSub = this.data.invokeDisplayCollections.subscribe((name:string) => {    
         this.DisplayCollectionsOnMap();    
@@ -89,17 +88,17 @@ export class MapComponent implements OnInit, AfterViewInit {
     }   
     if (this.data.displayMyBroadcastSub==undefined) {    
       this.data.displayMyBroadcastSub = this.data.invokeDisplayMyBroadcasts.subscribe((name:string) => {    
-        this.DisplayBroadcastsOnMap(0, this.myBroadcasts);    
+        this.DisplayPrivateBroadcastsOnMap(0, this.myBroadcasts);    
       });    
     } 
     if (this.data.displayFollowingBroadcastSub==undefined) {    
       this.data.displayFollowingBroadcastSub = this.data.invokeDisplayFollowingBroadcasts.subscribe((name:string) => {    
-        this.DisplayBroadcastsOnMap(1, this.followingBroadcasts);    
+        this.DisplayPrivateBroadcastsOnMap(1, this.followingBroadcasts);    
       });    
     }
     if (this.data.displayPublicBroadcastSub==undefined) {    
       this.data.displayPublicBroadcastSub = this.data.invokeDisplayPublicBroadcasts.subscribe((name:string) => {    
-        this.DisplayBroadcastsOnMap(2, this.publicBroadcasts);    
+        this.DisplayPublicBroadcastsOnMap(this.publicBroadcasts);    
       });    
     }
      
@@ -121,12 +120,38 @@ export class MapComponent implements OnInit, AfterViewInit {
           this.data.changeGeocoderFlag(true); 
         });
       });
-        
       this.geolocate.on('geolocate', (e) => {
         let position = {"lng": e.coords.longitude, "lat": e.coords.latitude};
         this.data.changeGeocoderObjectLngLat(position);
         this.data.changeGeocoderFlag(true); 
       });
+      this.map.on('click', 'publicBroadcasts', (e) => {
+        var coordinates = e.features[0].geometry['coordinates'].slice();
+        var description = e.features[0]['properties'].description;
+
+        // Ensure that if the map is zoomed out such that multiple
+        // copies of the feature are visible, the popup appears
+        // over the copy being pointed to.
+        while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+            coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+        }
+
+        new mapboxgl.Popup()
+            .setLngLat(coordinates)
+            .setHTML(description)
+            .addTo(this.map);
+      });
+
+      // Change the cursor to a pointer when the mouse is over the places layer.
+      this.map.on('mouseenter', 'publicBroadcasts', () => {
+        this.map.getCanvas().style.cursor = 'pointer';
+      });
+
+      // Change it back to a pointer when it leaves.
+      this.map.on('mouseleave', 'publicBroadcasts', () => {
+        this.map.getCanvas().style.cursor = '';
+      });  
+
   } 
 
   DisplayCollectionsOnMap(){
@@ -163,9 +188,8 @@ export class MapComponent implements OnInit, AfterViewInit {
       }
   }
 
-  DisplayBroadcastsOnMap(type, broadcasts){
+  DisplayPrivateBroadcastsOnMap(type, broadcasts){
       this.clearMarkers("broadcast", type);
-      console.log(broadcasts)
       for (let i = 0; i < broadcasts.length; i++){
         // create a HTML element for each feature
         var el = document.createElement('div');
@@ -191,6 +215,16 @@ export class MapComponent implements OnInit, AfterViewInit {
           endHours = endHours - 12;
           endPeriod = "PM"
         }
+        let startMinute = startDate.getMinutes();
+        let startMinuteZero = ''
+        if (startMinute < 10){
+          startMinuteZero = '0';
+        }
+        let endMinute = endDate.getMinutes();
+        let endMinuteZero = ''
+        if (endMinute < 10){
+          endMinuteZero = '0';
+        }
 
         // make a marker for each feature and add to the map
         let thisMarker = new mapboxgl.Marker(el)
@@ -199,8 +233,8 @@ export class MapComponent implements OnInit, AfterViewInit {
           .setHTML('<h3>' + broadcasts[i]['broadcastName'] + '</h3>'+
                     '<p>' + broadcasts[i]['description'] + '</p>' +
                     '<footer> <p> By:' + broadcasts[i]['owner'] + '<br>'
-                    + startDate.getMonth() +  '/' + startDate.getDay() + '/' + startDate.getFullYear() + ', ' + startHours + ':' + startDate.getMinutes() + ' ' + startPeriod +  
-                    ' to ' + endHours + ':' + endDate.getMinutes() + ' ' + endPeriod + '</p></footer>'))
+                    + startDate.getMonth() +  '/' + startDate.getDay() + '/' + startDate.getFullYear() + ', ' + startHours + ':' + startMinuteZero + startMinute + ' ' + startPeriod +  
+                    ' to ' + endHours + ':' + endMinuteZero + endMinute + ' ' + endPeriod + '</p></footer>'))
           .addTo(this.map);
 
         if(type == 0){
@@ -208,12 +242,84 @@ export class MapComponent implements OnInit, AfterViewInit {
         }    
         if(type == 1){
           this.currentFollowingBroadcastMarkers.push(thisMarker);
-        }   
-        if(type == 2){
-          this.currentPublicBroadcastMarkers.push(thisMarker);
-        }           
+        }             
         
       }
+  }
+
+  DisplayPublicBroadcastsOnMap(broadcasts){
+    if (this.map.getLayer("publicBroadcasts")) {
+      this.map.removeLayer("publicBroadcasts");
+    }
+    if (this.map.getSource("publicBroadcasts")) {
+      this.map.removeSource("publicBroadcasts");
+    }
+    let data = {
+      'features': [] 
+    }
+    for (let i = 0; i < broadcasts.length; i++){
+      let startDate = new Date(broadcasts[i]['start']);
+      let startHours = startDate.getHours();
+      let startPeriod = "AM"
+      if (startHours > 12){
+        startHours = startHours - 12;
+        startPeriod = "PM"
+      }
+      let startMinute = startDate.getMinutes();
+      let startMinuteZero = ''
+      if (startMinute < 10){
+        startMinuteZero = '0';
+      }
+      let endDate = new Date(broadcasts[i]['end']);
+      let endHours = endDate.getHours();
+      let endPeriod = "AM"
+      if (endHours > 12){
+        endHours = endHours - 12;
+        endPeriod = "PM"
+      }
+      let endMinute = endDate.getMinutes();
+      let endMinuteZero = ''
+      if (endMinute < 10){
+        endMinuteZero = '0';
+      }
+      let thisBroadcast = {
+        'type': 'Feature',
+        'properties': {
+            'description':
+            '<h3>' + broadcasts[i]['broadcastName'] + '</h3>'+
+            '<p>' + broadcasts[i]['description'] + '</p>' +
+            '<footer> <p> By:' + broadcasts[i]['owner'] + '<br>'
+            + startDate.getMonth() +  '/' + startDate.getDay() + '/' + startDate.getFullYear() + ', ' + startHours + ':' + startMinuteZero + startMinute + ' ' + startPeriod +  
+            ' to ' + endHours + ':' + endMinuteZero + endMinute + ' ' + endPeriod + '</p></footer>',
+            'icon': broadcasts[i]['icon']
+        },
+        'geometry': {
+            'type': 'Point',
+            'coordinates': [broadcasts[i]['coordinates'][0], broadcasts[i]['coordinates'][1]]
+        }
+      }
+      data.features.push(thisBroadcast);
+    }
+    this.map.addSource('publicBroadcasts', {
+      'type': 'geojson',
+      'data': {
+        'type': 'FeatureCollection',
+        'features': data.features 
+      },
+      'cluster': true,
+      'clusterRadius': 5,
+      'clusterMaxZoom': 10,
+    });
+    this.map.addLayer({
+      'id': 'publicBroadcasts',
+      'type': 'symbol',
+      'source': 'publicBroadcasts',
+      'layout': {
+          'icon-image': '{icon}',
+          'icon-allow-overlap': true
+      }
+
+    });
   }
 
   clearMarkers(type, broadcastType){
@@ -242,14 +348,5 @@ export class MapComponent implements OnInit, AfterViewInit {
         this.currentFollowingBroadcastMarkers = [];
       }
     } 
-    else if(type == "broadcast" && broadcastType == 2){
-      if (this.currentPublicBroadcastMarkers!==null) {
-        for (var i = this.currentPublicBroadcastMarkers.length - 1; i >= 0; i--) {
-          this.currentPublicBroadcastMarkers[i].remove();
-        }
-        this.currentPublicBroadcastMarkers = [];
-      }
-    } 
-
   }
 }
