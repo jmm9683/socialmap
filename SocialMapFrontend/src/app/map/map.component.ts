@@ -202,6 +202,7 @@ export class MapComponent implements OnInit, AfterViewInit {
         el.style.cursor = "pointer";
         
         let startDate = new Date(broadcasts[i]['start']);
+        let month = startDate.getMonth() + 1;
         let startHours = startDate.getHours();
         let startPeriod = "AM"
         if (startHours > 12){
@@ -233,7 +234,7 @@ export class MapComponent implements OnInit, AfterViewInit {
           .setHTML('<h3>' + broadcasts[i]['broadcastName'] + '</h3>'+
                     '<p>' + broadcasts[i]['description'] + '</p>' +
                     '<footer> <p> By:' + broadcasts[i]['owner'] + '<br>'
-                    + startDate.getMonth() +  '/' + startDate.getDay() + '/' + startDate.getFullYear() + ', ' + startHours + ':' + startMinuteZero + startMinute + ' ' + startPeriod +  
+                    + month +  '/' + startDate.getDate() + '/' + startDate.getFullYear() + ', ' + startHours + ':' + startMinuteZero + startMinute + ' ' + startPeriod +  
                     ' to ' + endHours + ':' + endMinuteZero + endMinute + ' ' + endPeriod + '</p></footer>'))
           .addTo(this.map);
 
@@ -259,6 +260,7 @@ export class MapComponent implements OnInit, AfterViewInit {
     }
     for (let i = 0; i < broadcasts.length; i++){
       let startDate = new Date(broadcasts[i]['start']);
+      let month = startDate.getMonth()+1;
       let startHours = startDate.getHours();
       let startPeriod = "AM"
       if (startHours > 12){
@@ -289,7 +291,7 @@ export class MapComponent implements OnInit, AfterViewInit {
             '<h3>' + broadcasts[i]['broadcastName'] + '</h3>'+
             '<p>' + broadcasts[i]['description'] + '</p>' +
             '<footer> <p> By:' + broadcasts[i]['owner'] + '<br>'
-            + startDate.getMonth() +  '/' + startDate.getDay() + '/' + startDate.getFullYear() + ', ' + startHours + ':' + startMinuteZero + startMinute + ' ' + startPeriod +  
+            + month +  '/' + startDate.getDate() + '/' + startDate.getFullYear() + ', ' + startHours + ':' + startMinuteZero + startMinute + ' ' + startPeriod +  
             ' to ' + endHours + ':' + endMinuteZero + endMinute + ' ' + endPeriod + '</p></footer>',
             'icon': broadcasts[i]['icon']
         },
